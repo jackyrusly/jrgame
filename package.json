@@ -10,10 +10,8 @@
   "license": "MIT",
   "dependencies": {
     "express": "^4.16.3",
+    "parcel-bundler": "^1.8.1",
     "phaser": "^3.6.0",
     "socket.io": "^2.1.0"
-  },
-  "devDependencies": {
-    "parcel-bundler": "^1.8.1"
   }
 }
