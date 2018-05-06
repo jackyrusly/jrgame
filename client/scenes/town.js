@@ -12,7 +12,7 @@ class Town extends Scene {
     preload() {
         this.load.tilemapTiledJSON('map', 'assets/maps/town.json');
         this.load.spritesheet('tilesheet', 'assets/maps/tilesheet.png', { frameWidth: 32, frameHeight: 32 });
-        this.load.image('sprite', 'assets/sprites/sprite.png')
+        this.load.spritesheet('player', 'assets/sprites/player.png', { frameWidth: 32, frameHeight: 32 })
     }
 
     create() {
@@ -36,18 +36,48 @@ class Town extends Scene {
         this.socket.emit('newPlayer');
 
         this.socket.on('newPlayer', (data) => {
-            this.players[data.id] = this.add.sprite(data.x, data.y, 'sprite');
+            this.players[data.id] = this.add.sprite(data.x, data.y, 'player');
         });
 
         this.socket.on('allPlayers', (data) => {
             for (let i = 0; i < data.length; i++) {
-                this.players[data[i].id] = this.add.sprite(data[i].x, data[i].y, 'sprite');
+                this.players[data[i].id] = this.add.sprite(data[i].x, data[i].y, 'player');
             }
         });
 
-        this.socket.on('move', (data) => {
+        this.anims.create({
+            key: 'left',
+            frames: this.anims.generateFrameNumbers('player', { start: 3, end: 5 }),
+            frameRate: 13,
+            repeat: -1
+        });
+
+        this.anims.create({
+            key: 'right',
+            frames: this.anims.generateFrameNumbers('player', { start: 6, end: 8 }),
+            frameRate: 13,
+            repeat: -1
+        });
+
+        this.anims.create({
+            key: 'up',
+            frames: this.anims.generateFrameNumbers('player', { start: 9, end: 11 }),
+            frameRate: 13,
+            repeat: -1
+        });
+
+        this.anims.create({
+            key: 'down',
+            frames: this.anims.generateFrameNumbers('player', { start: 0, end: 2 }),
+            frameRate: 13,
+            repeat: -1
+        });
+
+        this.socket.on('move', (data, direction) => {
             this.players[data.id].x = data.x;
             this.players[data.id].y = data.y;
+
+            this.players[data.id].anims.play(direction, true);
         });
 
         this.socket.on('movePlayer', (data) => {
@@ -66,6 +96,15 @@ class Town extends Scene {
             });
         });
 
+        this.input.keyboard.on('keyup', (event) => {
+            if (event.keyCode === 68 || event.keyCode === 83 || event.keyCode === 65 || event.keyCode === 87) /* A D W S */
+                this.socket.emit('stop');
+        });
+
+        this.socket.on('stop', (id) => {
+            this.players[id].anims.stop();
+        });
+
         this.socket.on('remove', (id) => {
             this.players[id].destroy();
             delete this.players[id];
@@ -76,17 +115,11 @@ class Town extends Scene {
         if (this.isMoving === false) {
             if (this.keyA.isDown) {
                 this.socket.emit('keyPress', 'left');
-            }
-
-            if (this.keyD.isDown) {
+            } else if (this.keyD.isDown) {
                 this.socket.emit('keyPress', 'right');
-            }
-
-            if (this.keyW.isDown) {
+            } else if (this.keyW.isDown) {
                 this.socket.emit('keyPress', 'up');
-            }
-
-            if (this.keyS.isDown) {
+            } else if (this.keyS.isDown) {
                 this.socket.emit('keyPress', 'down');
             }
         }

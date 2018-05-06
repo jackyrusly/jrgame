@@ -31,7 +31,11 @@ class Player extends BaseModel {
 
         socket.on('keyPress', (data) => {
             player.update(data);
-            io.emit('move', player);
+            io.emit('move', player, data);
+        });
+
+        socket.on('stop', () => {
+            io.emit('stop', player.id);
         });
     }
 
@@ -41,9 +45,8 @@ class Player extends BaseModel {
     }
 
     constructor(id) {
-        super();
-        this.id = id;
-        this.speed = 4;
+        super(id, 260, 260);
+        this.speed = 3;
     }
 
     update(direction) {

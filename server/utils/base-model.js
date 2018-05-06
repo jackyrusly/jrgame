@@ -1,8 +1,8 @@
 class BaseModel {
-    constructor() {
-        this.id = '';
-        this.x = 250;
-        this.y = 250;
+    constructor(id, x, y) {
+        this.id = id;
+        this.x = x;
+        this.y = y;
         this.speedX = 0;
         this.speedY = 0;
     }
