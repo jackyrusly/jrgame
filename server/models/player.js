@@ -23,9 +23,10 @@ class Player extends BaseModel {
             socket.broadcast.emit('newPlayer', player);
         });
 
-        socket.on('keyPress', (data) => {
-            player.update(data);
-            io.emit('move', player, data);
+        socket.on('keyPress', (direction, coor) => {
+            player.update(direction, coor);
+
+            io.emit('move', player, direction);
         });
 
         socket.on('stop', () => {
@@ -40,28 +41,29 @@ class Player extends BaseModel {
 
     constructor(id) {
         super(id, 260, 260);
-        this.speed = 3;
+        this.speed = 200;
     }
 
-    update(direction) {
-        this.updateSpeed(direction);
-        super.update();
-    }
+    update(direction, coor) {
+        this.x = coor.x;
+        this.y = coor.y;
 
-    updateSpeed(direction) {
-        if (direction === 'right')
-            this.speedX = this.speed;
-        else if (direction === 'left')
+        if (direction === 'left') {
             this.speedX = -this.speed;
-        else
-            this.speedX = 0;
-
-        if (direction === 'up')
-            this.speedY = -this.speed;
-        else if (direction === 'down')
-            this.speedY = this.speed;
-        else
             this.speedY = 0;
+        }
+        else if (direction === 'right') {
+            this.speedX = this.speed;
+            this.speedY = 0;
+        }
+        else if (direction === 'up') {
+            this.speedX = 0;
+            this.speedY = -this.speed;
+        }
+        else if (direction === 'down') {
+            this.speedX = 0;
+            this.speedY = this.speed;
+        }
     }
 }
 

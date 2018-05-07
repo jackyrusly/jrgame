@@ -6,14 +6,13 @@ class Town extends Scene {
         super({ key: 'Town' });
         this.socket = io();
         this.players = {};
+        this.layers = {};
     }
 
     preload() {
         this.load.tilemapTiledJSON('map', 'assets/maps/town.json');
         this.load.spritesheet('tilesheet', 'assets/maps/tilesheet.png', { frameWidth: 32, frameHeight: 32 });
         this.load.spritesheet('player', 'assets/sprites/player.png', { frameWidth: 32, frameHeight: 32 });
-
-        this.load.image('arrow', 'assets/icons/arrow.png');
     }
 
     create() {
@@ -25,26 +24,52 @@ class Town extends Scene {
         this.keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
         this.keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
 
-        let layer = this.map.createStaticLayer(0, this.tileset, 0, 0);
-
-        for (let i = 1; i < this.map.layers.length; i++) {
-            this.map.createStaticLayer(this.map.layers[i].name, this.tileset, 0, 0);
+        for (let i = 0; i < this.map.layers.length; i++) {
+            this.layers[i] = this.map.createStaticLayer(this.map.layers[i].name, this.tileset, 0, 0);
         }
+
+        /* River */
+        this.layers[6].setCollisionBetween(0, 1021);
+
+        /* House 1 */
+        this.layers[7].setCollisionBetween(105, 110);
+        this.layers[7].setCollisionBetween(125, 130);
+        this.layers[7].setCollisionBetween(145, 150);
+        this.layers[7].setCollisionBetween(165, 170);
+
+        /* House 2 */
+        this.layers[7].setCollisionBetween(207, 207);
+        this.layers[7].setCollisionBetween(226, 228);
+        this.layers[7].setCollisionBetween(245, 249);
+        this.layers[7].setCollisionBetween(264, 270);
+        this.layers[7].setCollisionBetween(284, 290);
+        this.layers[7].setCollisionBetween(304, 310);
+        this.layers[7].setCollisionBetween(324, 330);
+        this.layers[7].setCollisionBetween(344, 350);
+        this.layers[7].setCollisionBetween(1661, 1663);
+
+        /* Camps */
+        this.layers[8].setCollisionBetween(5, 25);
+
+        /* Trees */
+        this.layers[9].setCollisionBetween(213, 215);
+        this.layers[9].setCollisionBetween(233, 256);
+        this.layers[9].setCollisionBetween(273, 296);
 
         this.socket.emit('newPlayer');
 
         this.socket.on('newPlayer', (data) => {
-            this.players[data.id] = this.add.sprite(data.x, data.y, 'player');
+            this.addPlayer(data.id, data.x, data.y);
         });
 
         this.socket.on('allPlayers', (data) => {
             for (let i = 0; i < data.length; i++) {
-                this.players[data[i].id] = this.add.sprite(data[i].x, data[i].y, 'player');
+                this.addPlayer(data[i].id, data[i].x, data[i].y);
             }
 
+            this.physics.world.setBounds(0, 0, 768, 544);
             this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
             this.cameras.main.startFollow(this.players[this.socket.id]);
-            this.physics.add.collider(this.players[this.socket.id], layer);
         });
 
         this.anims.create({
@@ -76,8 +101,8 @@ class Town extends Scene {
         });
 
         this.socket.on('move', (data, direction) => {
-            this.players[data.id].x = data.x;
-            this.players[data.id].y = data.y;
+            this.players[data.id].body.velocity.x = data.speedX;
+            this.players[data.id].body.velocity.y = data.speedY;
 
             this.players[data.id].anims.play(direction, true);
         });
@@ -87,12 +112,14 @@ class Town extends Scene {
                 this.socket.emit('stop');
         });
 
-        this.hold(document.getElementById('up'), () => { this.socket.emit('keyPress', 'up'); }, 1000 / 60, 1);
-        this.hold(document.getElementById('down'), () => { this.socket.emit('keyPress', 'down'); }, 1000 / 60, 1);
-        this.hold(document.getElementById('left'), () => { this.socket.emit('keyPress', 'left'); }, 1000 / 60, 1);
-        this.hold(document.getElementById('right'), () => { this.socket.emit('keyPress', 'right'); }, 1000 / 60, 1);
+        this.hold(document.getElementById('up'), () => { this.socket.emit('keyPress', 'up', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y }); }, 1000 / 60, 1);
+        this.hold(document.getElementById('down'), () => { this.socket.emit('keyPress', 'down', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y }); }, 1000 / 60, 1);
+        this.hold(document.getElementById('left'), () => { this.socket.emit('keyPress', 'left', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y }); }, 1000 / 60, 1);
+        this.hold(document.getElementById('right'), () => { this.socket.emit('keyPress', 'right', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y }); }, 1000 / 60, 1);
 
         this.socket.on('stop', (id) => {
+            this.players[id].body.velocity.x = 0;
+            this.players[id].body.velocity.y = 0;
             this.players[id].anims.stop();
         });
 
@@ -102,15 +129,24 @@ class Town extends Scene {
         });
     }
 
+    addPlayer(id, x, y) {
+        this.players[id] = this.physics.add.sprite(x, y, 'player');
+        this.players[id].setCollideWorldBounds(true);
+        this.physics.add.collider(this.players[id], this.layers[6]);
+        this.physics.add.collider(this.players[id], this.layers[7]);
+        this.physics.add.collider(this.players[id], this.layers[8]);
+        this.physics.add.collider(this.players[id], this.layers[9]);
+    }
+
     update() {
         if (this.keyA.isDown) {
-            this.socket.emit('keyPress', 'left');
+            this.socket.emit('keyPress', 'left', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y });
         } else if (this.keyD.isDown) {
-            this.socket.emit('keyPress', 'right');
+            this.socket.emit('keyPress', 'right', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y });
         } else if (this.keyW.isDown) {
-            this.socket.emit('keyPress', 'up');
+            this.socket.emit('keyPress', 'up', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y });
         } else if (this.keyS.isDown) {
-            this.socket.emit('keyPress', 'down');
+            this.socket.emit('keyPress', 'down', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y });
         }
     }
 
