@@ -6,13 +6,14 @@ class Town extends Scene {
         super({ key: 'Town' });
         this.socket = io();
         this.players = {};
-        this.isMoving = false;
     }
 
     preload() {
         this.load.tilemapTiledJSON('map', 'assets/maps/town.json');
         this.load.spritesheet('tilesheet', 'assets/maps/tilesheet.png', { frameWidth: 32, frameHeight: 32 });
-        this.load.spritesheet('player', 'assets/sprites/player.png', { frameWidth: 32, frameHeight: 32 })
+        this.load.spritesheet('player', 'assets/sprites/player.png', { frameWidth: 32, frameHeight: 32 });
+
+        this.load.image('arrow', 'assets/icons/arrow.png');
     }
 
     create() {
@@ -24,14 +25,11 @@ class Town extends Scene {
         this.keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
         this.keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
 
-        for (let i = 0; i < this.map.layers.length; i++) {
+        let layer = this.map.createStaticLayer(0, this.tileset, 0, 0);
+
+        for (let i = 1; i < this.map.layers.length; i++) {
             this.map.createStaticLayer(this.map.layers[i].name, this.tileset, 0, 0);
         }
-
-        this.input.on('pointerdown', (event) => {
-            this.isMoving = true;
-            this.socket.emit('click', { x: event.x, y: event.y });
-        });
 
         this.socket.emit('newPlayer');
 
@@ -43,6 +41,10 @@ class Town extends Scene {
             for (let i = 0; i < data.length; i++) {
                 this.players[data[i].id] = this.add.sprite(data[i].x, data[i].y, 'player');
             }
+
+            this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
+            this.cameras.main.startFollow(this.players[this.socket.id]);
+            this.physics.add.collider(this.players[this.socket.id], layer);
         });
 
         this.anims.create({
@@ -80,26 +82,15 @@ class Town extends Scene {
             this.players[data.id].anims.play(direction, true);
         });
 
-        this.socket.on('movePlayer', (data) => {
-            let player = this.players[data.id];
-            let distance = Phaser.Math.Distance.Between(player.x, player.y, data.x, data.y);
-            let duration = distance * 10;
-
-            this.tweens.add({
-                targets: player,
-                x: data.x,
-                y: data.y,
-                duration: distance * 5,
-                onComplete: () => {
-                    this.isMoving = false;
-                },
-            });
-        });
-
         this.input.keyboard.on('keyup', (event) => {
             if (event.keyCode === 68 || event.keyCode === 83 || event.keyCode === 65 || event.keyCode === 87) /* A D W S */
                 this.socket.emit('stop');
         });
+
+        this.hold(document.getElementById('up'), () => { this.socket.emit('keyPress', 'up'); }, 1000 / 60, 1);
+        this.hold(document.getElementById('down'), () => { this.socket.emit('keyPress', 'down'); }, 1000 / 60, 1);
+        this.hold(document.getElementById('left'), () => { this.socket.emit('keyPress', 'left'); }, 1000 / 60, 1);
+        this.hold(document.getElementById('right'), () => { this.socket.emit('keyPress', 'right'); }, 1000 / 60, 1);
 
         this.socket.on('stop', (id) => {
             this.players[id].anims.stop();
@@ -112,18 +103,48 @@ class Town extends Scene {
     }
 
     update() {
-        if (this.isMoving === false) {
-            if (this.keyA.isDown) {
-                this.socket.emit('keyPress', 'left');
-            } else if (this.keyD.isDown) {
-                this.socket.emit('keyPress', 'right');
-            } else if (this.keyW.isDown) {
-                this.socket.emit('keyPress', 'up');
-            } else if (this.keyS.isDown) {
-                this.socket.emit('keyPress', 'down');
-            }
+        if (this.keyA.isDown) {
+            this.socket.emit('keyPress', 'left');
+        } else if (this.keyD.isDown) {
+            this.socket.emit('keyPress', 'right');
+        } else if (this.keyW.isDown) {
+            this.socket.emit('keyPress', 'up');
+        } else if (this.keyS.isDown) {
+            this.socket.emit('keyPress', 'down');
         }
     }
+
+    hold(btn, action, start, speedup) {
+        let t;
+
+        let repeat = () => {
+            action();
+            t = setTimeout(repeat, start);
+            start = start / speedup;
+        }
+
+        btn.onmousedown = (e) => {
+            e.preventDefault();
+            repeat();
+        };
+
+        btn.onmouseup = (e) => {
+            e.preventDefault();
+            clearTimeout(t);
+            this.socket.emit('stop');
+        };
+
+        btn.ontouchstart = (e) => {
+            e.preventDefault();
+            repeat();
+        };
+
+        btn.ontouchend = (e) => {
+            e.preventDefault();
+            clearTimeout(t);
+            this.socket.emit('stop');
+        };
+    };
 }
 
 export default Town;

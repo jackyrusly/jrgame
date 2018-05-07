@@ -1,3 +1,32 @@
 * {
     margin: 0;
 }
+
+canvas {
+    padding: 0;
+    margin: auto;
+    display: block;
+    position: absolute;
+    top: -150px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border: 2px solid black;
+}
+
+#control {
+    position: absolute;
+    top: 300px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: 181px;
+    height: 100px;
+    text-align: center;
+}
+
+#control button {
+    margin: 10px;
+    padding: 10px;
+}

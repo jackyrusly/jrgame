@@ -23,12 +23,6 @@ class Player extends BaseModel {
             socket.broadcast.emit('newPlayer', player);
         });
 
-        socket.on('click', (data) => {
-            player.x = data.x;
-            player.y = data.y;
-            io.emit('movePlayer', player);
-        });
-
         socket.on('keyPress', (data) => {
             player.update(data);
             io.emit('move', player, data);

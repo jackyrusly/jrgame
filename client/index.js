@@ -3,8 +3,8 @@ import Town from './scenes/town';
 
 const config = {
     type: Phaser.AUTO,
-    width: 768,
-    height: 544,
+    width: 350,
+    height: 350,
     physics: {
         default: 'arcade',
         arcade: {
