@@ -3,13 +3,23 @@ const BaseModel = require('../utils/base-model');
 class Player extends BaseModel {
     static onConnect(io, socket) {
         let player = new Player(socket.id);
-        Player.list[socket.id] = player;
 
-        socket.on('newPlayer', () => {
+        socket.on('newPlayer', (room) => {
+            socket.join(room);
+            socket.room = room;
+
+            if (room == 'House') {
+                player.x = 240;
+                player.y = 430;
+                player.direction = 'up';
+            }
+
+            Player.list[room][socket.id] = player;
+
             let players = [];
 
-            for (let i in Player.list) {
-                let p = Player.list[i];
+            for (let i in Player.list[room]) {
+                let p = Player.list[room][i];
 
                 players.push({
                     id: p.id,
@@ -21,29 +31,31 @@ class Player extends BaseModel {
 
             socket.emit('allPlayers', players);
 
-            socket.broadcast.emit('newPlayer', player);
+            socket.broadcast.to(room).emit('newPlayer', player);
         });
 
         socket.on('keyPress', (direction, coor) => {
             player.update(direction, coor);
 
-            io.emit('move', player, direction);
+            io.to(socket.room).emit('move', player, direction);
         });
 
         socket.on('stop', (coor) => {
             player.updatePosition(coor);
-            io.emit('stop', player);
+            io.to(socket.room).emit('stop', player);
         });
     }
 
     static onDisconnect(io, socket) {
-        delete Player.list[socket.id];
-        io.emit('remove', socket.id);
+        if (Player.list[socket.room])
+            delete Player.list[socket.room][socket.id];
+
+        io.to(socket.room).emit('remove', socket.id);
     }
 
     constructor(id) {
         super(id, 225, 280);
- 
+
         this.direction = 'down';
         this.speed = 200;
     }
@@ -76,6 +88,9 @@ class Player extends BaseModel {
     }
 }
 
-Player.list = {};
+Player.list = {
+    'Town': {},
+    'House': {},
+};
 
 module.exports = Player;
