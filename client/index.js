@@ -1,5 +1,7 @@
 import Phaser, { Game } from 'phaser';
-import Town from './scenes/town';
+import Init from './scenes/Init';
+import Town from './scenes/Town';
+import House from './scenes/House';
 
 const config = {
     type: Phaser.AUTO,
@@ -12,7 +14,7 @@ const config = {
             debug: false,
         },
     },
-    scene: [Town],
+    scene: [Init, Town, House],
 };
 
 const game = new Game(config);

@@ -15,6 +15,7 @@ class Player extends BaseModel {
                     id: p.id,
                     x: p.x,
                     y: p.y,
+                    direction: p.direction,
                 });
             }
 
@@ -29,8 +30,9 @@ class Player extends BaseModel {
             io.emit('move', player, direction);
         });
 
-        socket.on('stop', () => {
-            io.emit('stop', player.id);
+        socket.on('stop', (coor) => {
+            player.updatePosition(coor);
+            io.emit('stop', player);
         });
     }
 
@@ -40,13 +42,20 @@ class Player extends BaseModel {
     }
 
     constructor(id) {
-        super(id, 260, 260);
+        super(id, 225, 280);
+        
+        this.direction = 'down';
         this.speed = 200;
     }
 
-    update(direction, coor) {
+    updatePosition(coor) {
         this.x = coor.x;
         this.y = coor.y;
+    }
+
+    update(direction, coor) {
+        this.updatePosition(coor);
+        this.direction = direction;
 
         if (direction === 'left') {
             this.speedX = -this.speed;
