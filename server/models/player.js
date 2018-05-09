@@ -43,7 +43,7 @@ class Player extends BaseModel {
 
     constructor(id) {
         super(id, 225, 280);
-        
+ 
         this.direction = 'down';
         this.speed = 200;
     }

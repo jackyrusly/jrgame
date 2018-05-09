@@ -91,6 +91,22 @@ class Town extends Scene {
             this.scene.start('House');
         });
 
+        this.socket.emit('newPlayer');
+
+        this.socket.on('newPlayer', (data) => {
+            this.addPlayer(data.id, data.x, data.y, data.direction);
+        });
+
+        this.socket.on('allPlayers', (data) => {
+            for (let i = 0; i < data.length; i++) {
+                this.addPlayer(data[i].id, data[i].x, data[i].y, data[i].direction);
+            }
+
+            this.physics.world.setBounds(0, 0, 768, 544);
+            this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
+            this.cameras.main.startFollow(this.players[this.socket.id]);
+        });
+
         this.socket.on('move', (data, direction) => {
             this.players[data.id].body.velocity.x = data.speedX;
             this.players[data.id].body.velocity.y = data.speedY;
