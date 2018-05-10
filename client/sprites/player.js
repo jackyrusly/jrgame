@@ -42,8 +42,11 @@ class Player {
         });
 
         this.s.input.keyboard.on('keyup', (event) => {
-            if (event.keyCode === 68 || event.keyCode === 83 || event.keyCode === 65 || event.keyCode === 87) /* A D W S */
+            if (event.keyCode === 68 || event.keyCode === 83 || event.keyCode === 65 || event.keyCode === 87) { /* A D W S */
+                this.players[this.socket.id].body.velocity.x = 0;
+                this.players[this.socket.id].body.velocity.y = 0;
                 this.socket.emit('stop', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y });
+            }
         });
 
         this.hold(document.getElementById('up'), () => { this.socket.emit('keyPress', 'up', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y }); }, 1000 / 60, 1);
@@ -69,7 +72,7 @@ class Player {
         this.s.cameras.main.on('camerafadeincomplete', () => {
             this.transition = false;
         });
-        
+
         this.s.cameras.main.on('camerafadeoutcomplete', () => {
             this.s.fadeOut();
         });
