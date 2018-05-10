@@ -16,12 +16,19 @@ class Init extends Scene {
         this.load.spritesheet('town', 'assets/maps/town.png', { frameWidth: 32, frameHeight: 32 });
         this.load.spritesheet('player', 'assets/sprites/player.png', { frameWidth: 32, frameHeight: 32 });
 
+        /* this.load.audio('music-town', ['assets/music/town.mp3']); */
+
         this.load.on('progress', this.onLoadProgress, this);
         this.load.on('complete', this.onLoadComplete, this);
         this.createProgressBar();
     }
 
     create() {
+        /*
+            this.music = this.sound.add('music-town', { loop: true });
+            this.music.play();
+        */
+       
         this.anims.create({
             key: 'left',
             frames: this.anims.generateFrameNumbers('player', { start: 3, end: 5 }),

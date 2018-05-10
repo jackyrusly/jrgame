@@ -20,7 +20,8 @@ class House extends Scene {
         }
 
         this.layers[0].setCollisionBetween(0, 153);
-        this.layers[2].setCollisionBetween(0, 470);
+        this.layers[1].setCollisionBetween(0, 100);
+        this.layers[2].setCollisionByExclusion([-1, 67, 68, 69]);   
 
         this.player.create();
     }
@@ -30,7 +31,6 @@ class House extends Scene {
     }
 
     fadeOut() {
-        console.log(this.player.socket.id);
         this.player.socket.disconnect();
         this.scene.start('Town');
     }
@@ -38,9 +38,10 @@ class House extends Scene {
     registerCollision(id) {
         let p = this.player;
 
+        this.physics.add.collider(p.players[id], this.layers[0]);
         this.physics.add.collider(p.players[id], this.layers[2]);
-        this.physics.add.collider(p.players[id], this.layers[0], (sprite, tile) => {
-            if (tile.index === 4 && p.socket.id === id) {
+        this.physics.add.collider(p.players[id], this.layers[1], (sprite, tile) => {
+            if (tile.index === 20 && p.socket.id === id) {
                 p.transition = true;
                 p.socket.emit('stop', { x: p.players[p.socket.id].x, y: p.players[p.socket.id].y });
                 p.players[p.socket.id].anims.stop();

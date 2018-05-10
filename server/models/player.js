@@ -10,7 +10,7 @@ class Player extends BaseModel {
 
             if (room == 'House') {
                 player.x = 240;
-                player.y = 430;
+                player.y = 365;
                 player.direction = 'up';
             }
 

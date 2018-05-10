@@ -45,6 +45,7 @@ class Player {
             if (event.keyCode === 68 || event.keyCode === 83 || event.keyCode === 65 || event.keyCode === 87) { /* A D W S */
                 this.players[this.socket.id].body.velocity.x = 0;
                 this.players[this.socket.id].body.velocity.y = 0;
+                this.players[this.socket.id].anims.stop();
                 this.socket.emit('stop', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y });
             }
         });

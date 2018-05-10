@@ -56,7 +56,6 @@ class Town extends Scene {
     }
 
     fadeOut() {
-        console.log(this.player.socket.id);
         this.player.socket.disconnect();
         this.scene.start('House');
     }
