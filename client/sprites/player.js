@@ -36,15 +36,11 @@ class Player {
         });
 
         this.socket.on('move', (data, direction) => {
-            if (data.id === this.socket.id) {
-                this.players[data.id].body.velocity.x = data.speedX;
-                this.players[data.id].body.velocity.y = data.speedY;
+            if (data.id !== this.socket.id) {
+                 this.players[data.id].x = data.x;
+                 this.players[data.id].y = data.y;
             }
-            else {
-                this.players[data.id].x = data.x;
-                this.players[data.id].y = data.y;
-            }
-
+            
             this.players[data.id].anims.play(direction, true);
         });
 
@@ -53,8 +49,6 @@ class Player {
                 this.players[this.socket.id].body.velocity.x = 0;
                 this.players[this.socket.id].body.velocity.y = 0;
                 this.players[this.socket.id].anims.stop();
-
-                console.log(this.players[this.socket.id].x);
                 
                 this.socket.emit('stop', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y });
             }
@@ -66,18 +60,11 @@ class Player {
         this.hold(document.getElementById('right'), () => { this.socket.emit('keyPress', 'right', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y }); }, 1000 / 60, 1);
 
         this.socket.on('stop', (data) => {
-            if (data.id === this.socket.id) {
-                this.players[data.id].body.velocity.x = 0;
-                this.players[data.id].body.velocity.y = 0;
-            }
-            else {
+            if (data.id !== this.socket.id) {
                 this.players[data.id].x = data.x;
                 this.players[data.id].y = data.y;
+                this.players[data.id].anims.stop();
             }
-            
-            console.log(data.x);
-
-            this.players[data.id].anims.stop();
         });
 
         this.socket.on('remove', (id) => {
@@ -99,12 +86,16 @@ class Player {
     update() {
         if (this.transition === false) {
             if (this.s.keyA.isDown) {
+                this.players[this.socket.id].body.velocity.x = -200;
                 this.socket.emit('keyPress', 'left', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y });
             } else if (this.s.keyD.isDown) {
+                this.players[this.socket.id].body.velocity.x = 200;
                 this.socket.emit('keyPress', 'right', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y });
             } else if (this.s.keyW.isDown) {
+                this.players[this.socket.id].body.velocity.y = -200;
                 this.socket.emit('keyPress', 'up', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y });
             } else if (this.s.keyS.isDown) {
+                this.players[this.socket.id].body.velocity.y = 200;
                 this.socket.emit('keyPress', 'down', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y });
             }
         }
