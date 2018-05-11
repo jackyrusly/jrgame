@@ -53,6 +53,9 @@ class Player {
                 this.players[this.socket.id].body.velocity.x = 0;
                 this.players[this.socket.id].body.velocity.y = 0;
                 this.players[this.socket.id].anims.stop();
+
+                console.log(this.players[this.socket.id].x);
+                
                 this.socket.emit('stop', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y });
             }
         });
@@ -72,6 +75,8 @@ class Player {
                 this.players[data.id].y = data.y;
             }
             
+            console.log(data.x);
+
             this.players[data.id].anims.stop();
         });
 
