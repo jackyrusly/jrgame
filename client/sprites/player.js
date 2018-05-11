@@ -32,6 +32,7 @@ class Player {
             this.s.physics.world.setBounds(0, 0, this.s.map.widthInPixels, this.s.map.heightInPixels);
             this.s.cameras.main.setBounds(0, 0, this.s.map.widthInPixels, this.s.map.heightInPixels);
             this.s.cameras.main.startFollow(this.players[this.socket.id]);
+            this.s.registerCollision(this.socket.id);
         });
 
         this.socket.on('move', (data, direction) => {
@@ -62,10 +63,15 @@ class Player {
         this.hold(document.getElementById('right'), () => { this.socket.emit('keyPress', 'right', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y }); }, 1000 / 60, 1);
 
         this.socket.on('stop', (data) => {
-            this.players[data.id].body.velocity.x = 0;
-            this.players[data.id].body.velocity.y = 0;
-            this.players[data.id].x = data.x;
-            this.players[data.id].y = data.y;
+            if (data.id === this.socket.id) {
+                this.players[data.id].body.velocity.x = 0;
+                this.players[data.id].body.velocity.y = 0;
+            }
+            else {
+                this.players[data.id].x = data.x;
+                this.players[data.id].y = data.y;
+            }
+            
             this.players[data.id].anims.stop();
         });
 
@@ -102,7 +108,6 @@ class Player {
     addPlayer(id, x, y, direction) {
         this.players[id] = this.s.physics.add.sprite(x, y, 'player');
         this.players[id].setCollideWorldBounds(true);
-        this.s.registerCollision(id);
 
         this.players[id].anims.play(direction);
         this.players[id].anims.stop();
