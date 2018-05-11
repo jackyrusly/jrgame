@@ -37,26 +37,22 @@ class Player {
 
         this.socket.on('move', (data, direction) => {
             if (data.id !== this.socket.id) {
-                 this.players[data.id].x = data.x;
-                 this.players[data.id].y = data.y;
-                 this.players[data.id].anims.play(direction, true);
+                this.players[data.id].x = data.x;
+                this.players[data.id].y = data.y;
+                this.players[data.id].anims.play(direction, true);
             }
         });
 
         this.s.input.keyboard.on('keyup', (event) => {
             if (event.keyCode === 68 || event.keyCode === 83 || event.keyCode === 65 || event.keyCode === 87) { /* A D W S */
-                this.players[this.socket.id].body.velocity.x = 0;
-                this.players[this.socket.id].body.velocity.y = 0;
-                this.players[this.socket.id].anims.stop();
-                
-                this.socket.emit('stop', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y });
+                this.stop();
             }
         });
 
-        this.hold(document.getElementById('up'), () => { this.socket.emit('keyPress', 'up', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y }); }, 1000 / 60, 1);
-        this.hold(document.getElementById('down'), () => { this.socket.emit('keyPress', 'down', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y }); }, 1000 / 60, 1);
-        this.hold(document.getElementById('left'), () => { this.socket.emit('keyPress', 'left', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y }); }, 1000 / 60, 1);
-        this.hold(document.getElementById('right'), () => { this.socket.emit('keyPress', 'right', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y }); }, 1000 / 60, 1);
+        this.hold(document.getElementById('up'), this.up, 1000 / 60, 1);
+        this.hold(document.getElementById('down'), this.down, 1000 / 60, 1);
+        this.hold(document.getElementById('left'), this.left, 1000 / 60, 1);
+        this.hold(document.getElementById('right'), this.right, 1000 / 60, 1);
 
         this.socket.on('stop', (data) => {
             if (data.id !== this.socket.id) {
@@ -85,21 +81,13 @@ class Player {
     update() {
         if (this.transition === false) {
             if (this.s.keyA.isDown) {
-                this.players[this.socket.id].body.velocity.x = -200;
-                this.players[this.socket.id].anims.play('left', true);
-                this.socket.emit('keyPress', 'left', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y });
+                this.left();
             } else if (this.s.keyD.isDown) {
-                this.players[this.socket.id].body.velocity.x = 200;
-                this.players[this.socket.id].anims.play('right', true);
-                this.socket.emit('keyPress', 'right', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y });
+                this.right();
             } else if (this.s.keyW.isDown) {
-                this.players[this.socket.id].body.velocity.y = -200;
-                this.players[this.socket.id].anims.play('up', true);
-                this.socket.emit('keyPress', 'up', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y });
+                this.up();
             } else if (this.s.keyS.isDown) {
-                this.players[this.socket.id].body.velocity.y = 200;
-                this.players[this.socket.id].anims.play('down', true);
-                this.socket.emit('keyPress', 'down', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y });
+                this.down();
             }
         }
     }
@@ -110,6 +98,38 @@ class Player {
 
         this.players[id].anims.play(direction);
         this.players[id].anims.stop();
+    }
+
+    left() {
+        this.players[this.socket.id].body.velocity.x = -200;
+        this.players[this.socket.id].anims.play('left', true);
+        this.socket.emit('keyPress', 'left', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y });
+    }
+
+    right() {
+        this.players[this.socket.id].body.velocity.x = 200;
+        this.players[this.socket.id].anims.play('right', true);
+        this.socket.emit('keyPress', 'right', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y });
+    }
+
+    up() {
+        this.players[this.socket.id].body.velocity.y = -200;
+        this.players[this.socket.id].anims.play('up', true);
+        this.socket.emit('keyPress', 'up', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y });
+    }
+
+    down() {
+        this.players[this.socket.id].body.velocity.y = 200;
+        this.players[this.socket.id].anims.play('down', true);
+        this.socket.emit('keyPress', 'down', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y });
+    }
+
+    stop() {
+        this.players[this.socket.id].body.velocity.x = 0;
+        this.players[this.socket.id].body.velocity.y = 0;
+        this.players[this.socket.id].anims.stop();
+
+        this.socket.emit('stop', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y });
     }
 
     hold(btn, action, start, speedup) {
@@ -129,7 +149,7 @@ class Player {
         btn.onmouseup = (e) => {
             e.preventDefault();
             clearTimeout(t);
-            this.socket.emit('stop', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y });
+            this.stop();
         };
 
         btn.ontouchstart = (e) => {
@@ -140,7 +160,7 @@ class Player {
         btn.ontouchend = (e) => {
             e.preventDefault();
             clearTimeout(t);
-            this.socket.emit('stop', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y });
+            this.stop();
         };
     }
 }
