@@ -86,19 +86,19 @@ class Player {
         if (this.transition === false) {
             if (this.s.keyA.isDown) {
                 this.players[this.socket.id].body.velocity.x = -200;
-                this.players[data.id].anims.play('left', true);
+                this.players[this.socket.id].anims.play('left', true);
                 this.socket.emit('keyPress', 'left', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y });
             } else if (this.s.keyD.isDown) {
                 this.players[this.socket.id].body.velocity.x = 200;
-                this.players[data.id].anims.play('right', true);
+                this.players[this.socket.id].anims.play('right', true);
                 this.socket.emit('keyPress', 'right', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y });
             } else if (this.s.keyW.isDown) {
                 this.players[this.socket.id].body.velocity.y = -200;
-                this.players[data.id].anims.play('up', true);
+                this.players[this.socket.id].anims.play('up', true);
                 this.socket.emit('keyPress', 'up', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y });
             } else if (this.s.keyS.isDown) {
                 this.players[this.socket.id].body.velocity.y = 200;
-                this.players[data.id].anims.play('down', true);
+                this.players[this.socket.id].anims.play('down', true);
                 this.socket.emit('keyPress', 'down', { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y });
             }
         }
