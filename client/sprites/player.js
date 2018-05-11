@@ -35,8 +35,14 @@ class Player {
         });
 
         this.socket.on('move', (data, direction) => {
-            this.players[data.id].body.velocity.x = data.speedX;
-            this.players[data.id].body.velocity.y = data.speedY;
+            if (data.id === this.socket.id) {
+                this.players[data.id].body.velocity.x = data.speedX;
+                this.players[data.id].body.velocity.y = data.speedY;
+            }
+            else {
+                this.players[data.id].x = data.x;
+                this.players[data.id].y = data.y;
+            }
 
             this.players[data.id].anims.play(direction, true);
         });
