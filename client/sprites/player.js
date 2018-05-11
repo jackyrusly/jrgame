@@ -49,10 +49,10 @@ class Player {
             }
         });
 
-        this.hold(document.getElementById('up'), this.up, 1000 / 60, 1);
-        this.hold(document.getElementById('down'), this.down, 1000 / 60, 1);
-        this.hold(document.getElementById('left'), this.left, 1000 / 60, 1);
-        this.hold(document.getElementById('right'), this.right, 1000 / 60, 1);
+        this.hold(document.getElementById('up'), this.up.bind(this), 1000 / 60, 1);
+        this.hold(document.getElementById('down'), this.down.bind(this), 1000 / 60, 1);
+        this.hold(document.getElementById('left'), this.left.bind(this), 1000 / 60, 1);
+        this.hold(document.getElementById('right'), this.right.bind(this), 1000 / 60, 1);
 
         this.socket.on('stop', (data) => {
             if (data.id !== this.socket.id) {
