@@ -13,10 +13,10 @@ class Player {
     }
 
     create() {
-        this.s.keyA = this.s.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
-        this.s.keyD = this.s.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
-        this.s.keyW = this.s.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
-        this.s.keyS = this.s.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+        this.s.keyLeft = this.s.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
+        this.s.keyRight = this.s.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+        this.s.keyUp = this.s.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
+        this.s.keyDown = this.s.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
 
         this.socket.emit('newPlayer', this.room);
 
@@ -36,15 +36,13 @@ class Player {
         });
 
         this.socket.on('move', (data, direction) => {
-            if (data.id !== this.socket.id) {
-                this.players[data.id].x = data.x;
-                this.players[data.id].y = data.y;
-                this.players[data.id].anims.play(direction, true);
-            }
+            this.players[data.id].x = data.x;
+            this.players[data.id].y = data.y;
+            this.players[data.id].anims.play(direction, true);
         });
 
         this.s.input.keyboard.on('keyup', (event) => {
-            if (event.keyCode === 68 || event.keyCode === 83 || event.keyCode === 65 || event.keyCode === 87) { /* A D W S */
+            if (event.keyCode >= 37 && event.keyCode <= 40) {
                 this.stop();
             }
         });
@@ -54,12 +52,12 @@ class Player {
         this.hold(document.getElementById('left'), this.left.bind(this), 1000 / 60, 1);
         this.hold(document.getElementById('right'), this.right.bind(this), 1000 / 60, 1);
 
+        this.registerChat();
+
         this.socket.on('stop', (data) => {
-            if (data.id !== this.socket.id) {
-                this.players[data.id].x = data.x;
-                this.players[data.id].y = data.y;
-                this.players[data.id].anims.stop();
-            }
+            this.players[data.id].x = data.x;
+            this.players[data.id].y = data.y;
+            this.players[data.id].anims.stop();
         });
 
         this.socket.on('remove', (id) => {
@@ -80,13 +78,13 @@ class Player {
 
     update() {
         if (this.transition === false) {
-            if (this.s.keyA.isDown) {
+            if (this.s.keyLeft.isDown) {
                 this.left();
-            } else if (this.s.keyD.isDown) {
+            } else if (this.s.keyRight.isDown) {
                 this.right();
-            } else if (this.s.keyW.isDown) {
+            } else if (this.s.keyUp.isDown) {
                 this.up();
-            } else if (this.s.keyS.isDown) {
+            } else if (this.s.keyDown.isDown) {
                 this.down();
             }
         }
@@ -172,6 +170,24 @@ class Player {
                 this.stop();
             }
         };
+    }
+
+    registerChat() {
+        let chat = document.getElementById('chat');
+        let messages = document.getElementById('messages');
+
+        chat.onsubmit = (e) => {
+            e.preventDefault();
+            let message = document.getElementById('message');
+            
+            this.socket.emit('chat', message.value);
+            message.value = '';
+        };
+
+        this.socket.on('chat', (name, message) => {
+            messages.innerHTML += `${name}: ${message}<br>`;
+            messages.scrollTo(0, messages.scrollHeight);
+        });
     }
 }
 

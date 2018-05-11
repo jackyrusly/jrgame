@@ -19,14 +19,37 @@ canvas {
     top: 300px;
     bottom: 0;
     left: 0;
-    right: 0;
+    right: 250px;
     margin: auto;
-    width: 181px;
+    width: 106px;
     height: 100px;
     text-align: center;
 }
 
+#chat {
+    position: absolute;
+    top: 300px;
+    bottom: 0;
+    left: 100px;
+    right: 0;
+    margin: auto;
+    width: 243px;
+    height: 100px;
+}
+
+#messages {
+    height: 90px;
+    border: 1px solid black;
+    margin-top: 5px;
+    overflow-y: scroll;
+}
+
+input[type=text] {
+    margin-top: 5px;
+    width: 239px;
+}
+
 #control button {
-    margin: 10px;
-    padding: 10px;
+    margin: 5px;
+    padding: 5px;
 }

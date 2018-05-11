@@ -3,8 +3,6 @@ class BaseModel {
         this.id = id;
         this.x = x;
         this.y = y;
-        this.speedX = 0;
-        this.speedY = 0;
     }
 }
 

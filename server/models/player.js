@@ -4,6 +4,10 @@ class Player extends BaseModel {
     static onConnect(io, socket) {
         let player = new Player(socket.id);
 
+        socket.on('chat', (message) => {
+            io.emit('chat', socket.id.substring(0, 5), message);
+        });
+
         socket.on('newPlayer', (room) => {
             socket.join(room);
             socket.room = room;
@@ -36,13 +40,12 @@ class Player extends BaseModel {
 
         socket.on('keyPress', (direction, coor) => {
             player.update(direction, coor);
-
-            io.to(socket.room).emit('move', player, direction);
+            socket.broadcast.to(socket.room).emit('move', player, direction);
         });
 
         socket.on('stop', (coor) => {
             player.updatePosition(coor);
-            io.to(socket.room).emit('stop', player);
+            socket.broadcast.to(socket.room).emit('stop', player);
         });
     }
 
@@ -57,7 +60,6 @@ class Player extends BaseModel {
         super(id, 225, 280);
 
         this.direction = 'down';
-        this.speed = 200;
     }
 
     updatePosition(coor) {
@@ -68,23 +70,6 @@ class Player extends BaseModel {
     update(direction, coor) {
         this.updatePosition(coor);
         this.direction = direction;
-
-        if (direction === 'left') {
-            this.speedX = -this.speed;
-            this.speedY = 0;
-        }
-        else if (direction === 'right') {
-            this.speedX = this.speed;
-            this.speedY = 0;
-        }
-        else if (direction === 'up') {
-            this.speedX = 0;
-            this.speedY = -this.speed;
-        }
-        else if (direction === 'down') {
-            this.speedX = 0;
-            this.speedY = this.speed;
-        }
     }
 }
 

@@ -9,7 +9,7 @@ class Init extends Scene {
     }
 
     preload() {
-        this.load.tilemapTiledJSON('map-town', 'assets/maps/town.json');        
+        this.load.tilemapTiledJSON('map-town', 'assets/maps/town.json');
         this.load.tilemapTiledJSON('map-house', 'assets/maps/house.json');
 
         this.load.spritesheet('house', 'assets/maps/house.png', { frameWidth: 32, frameHeight: 32 });
@@ -28,7 +28,7 @@ class Init extends Scene {
             this.music = this.sound.add('music-town', { loop: true });
             this.music.play();
         */
-       
+
         this.anims.create({
             key: 'left',
             frames: this.anims.generateFrameNumbers('player', { start: 3, end: 5 }),
@@ -59,8 +59,8 @@ class Init extends Scene {
     }
 
     createProgressBar() {
-        const Rectangle = Phaser.Geom.Rectangle;
-        const main = Rectangle.Clone(this.cameras.main);
+        let Rectangle = Phaser.Geom.Rectangle;
+        let main = Rectangle.Clone(this.cameras.main);
 
         this.progressRect = new Rectangle(0, 0, main.width / 2, 50);
         Rectangle.CenterOn(this.progressRect, main.centerX, main.centerY);
@@ -76,7 +76,7 @@ class Init extends Scene {
     }
 
     onLoadProgress(progress) {
-        const color = 0xffffff;
+        let color = (this.load.failed.size > 0) ? (0xff2200) : (0xffffff);
 
         this.progressRect.width = progress * this.progressCompleteRect.width;
         this.progressBar
