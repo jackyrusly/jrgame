@@ -1,27 +1,26 @@
 import Phaser, { Scene } from 'phaser';
 import Player from '../sprites/player';
 
-class House extends Scene {
+class House_1 extends Scene {
     constructor() {
-        super({ key: 'House' });
+        super({ key: 'House_1' });
     }
 
     init() {
         this.layers = {};
-        this.player = new Player(this, 'House');
+        this.player = new Player(this, 'House_1', { x: 240, y: 365, direction: 'up' });
     }
 
     create() {
-        this.map = this.add.tilemap('map-house');
+        this.map = this.add.tilemap('map-house-1');
         this.tileset = this.map.addTilesetImage('house');
 
         for (let i = 0; i < this.map.layers.length; i++) {
             this.layers[i] = this.map.createStaticLayer(this.map.layers[i].name, this.tileset, 0, 0);
         }
 
-        this.layers[0].setCollisionBetween(0, 153);
         this.layers[1].setCollisionBetween(0, 100);
-        this.layers[2].setCollisionByExclusion([-1, 67, 68, 69]);   
+        this.layers[2].setCollisionByExclusion([-1, 67, 68, 69]);
 
         this.player.create();
     }
@@ -30,15 +29,14 @@ class House extends Scene {
         this.player.update();
     }
 
-    fadeOut() {
+    changeScene() {
         this.player.socket.disconnect();
-        this.scene.start('Town');
+        this.scene.start('Town', 'House_1');
     }
 
     registerCollision(id) {
         let p = this.player;
 
-        this.physics.add.collider(p.players[id], this.layers[0]);
         this.physics.add.collider(p.players[id], this.layers[2]);
         this.physics.add.collider(p.players[id], this.layers[1], (sprite, tile) => {
             if (tile.index === 20 && p.socket.id === id) {
@@ -51,4 +49,4 @@ class House extends Scene {
     }
 }
 
-export default House;
+export default House_1;

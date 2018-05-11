@@ -10,8 +10,9 @@ class Init extends Scene {
 
     preload() {
         this.load.tilemapTiledJSON('map-town', 'assets/maps/town.json');
-        this.load.tilemapTiledJSON('map-house', 'assets/maps/house.json');
-
+        this.load.tilemapTiledJSON('map-house-1', 'assets/maps/house-1.json');
+        this.load.tilemapTiledJSON('map-house-2', 'assets/maps/house-2.json');
+        
         this.load.spritesheet('house', 'assets/maps/house.png', { frameWidth: 32, frameHeight: 32 });
         this.load.spritesheet('town', 'assets/maps/town.png', { frameWidth: 32, frameHeight: 32 });
         this.load.spritesheet('player', 'assets/sprites/player.png', { frameWidth: 32, frameHeight: 32 });
@@ -76,7 +77,7 @@ class Init extends Scene {
     }
 
     onLoadProgress(progress) {
-        let color = (this.load.failed.size > 0) ? (0xff2200) : (0xffffff);
+        let color = (0xffffff);
 
         this.progressRect.width = progress * this.progressCompleteRect.width;
         this.progressBar

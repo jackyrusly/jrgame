@@ -1,10 +1,10 @@
 import io from 'socket.io-client';
-import { ENGINE_METHOD_DIGESTS } from 'constants';
 
 class Player {
-    constructor(scene, room) {
+    constructor(scene, room, position) {
         this.s = scene;
         this.room = room;
+        this.position = position;
 
         this.socket = io();
         this.players = {};
@@ -13,66 +13,66 @@ class Player {
     }
 
     create() {
-        this.s.keyLeft = this.s.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
-        this.s.keyRight = this.s.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
-        this.s.keyUp = this.s.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
-        this.s.keyDown = this.s.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
-
-        this.socket.emit('newPlayer', this.room);
-
-        this.socket.on('newPlayer', (data) => {
-            this.addPlayer(data.id, data.x, data.y, data.direction);
-        });
-
-        this.socket.on('allPlayers', (data) => {
-            for (let i = 0; i < data.length; i++) {
-                this.addPlayer(data[i].id, data[i].x, data[i].y, data[i].direction);
-            }
-
-            this.s.physics.world.setBounds(0, 0, this.s.map.widthInPixels, this.s.map.heightInPixels);
-            this.s.cameras.main.setBounds(0, 0, this.s.map.widthInPixels, this.s.map.heightInPixels);
-            this.s.cameras.main.startFollow(this.players[this.socket.id]);
-            this.s.registerCollision(this.socket.id);
-        });
-
-        this.socket.on('move', (data, direction) => {
-            this.players[data.id].x = data.x;
-            this.players[data.id].y = data.y;
-            this.players[data.id].anims.play(direction, true);
-        });
-
-        this.s.input.keyboard.on('keyup', (event) => {
-            if (event.keyCode >= 37 && event.keyCode <= 40) {
-                this.stop();
-            }
-        });
-
-        this.hold(document.getElementById('up'), this.up.bind(this), 1000 / 60, 1);
-        this.hold(document.getElementById('down'), this.down.bind(this), 1000 / 60, 1);
-        this.hold(document.getElementById('left'), this.left.bind(this), 1000 / 60, 1);
-        this.hold(document.getElementById('right'), this.right.bind(this), 1000 / 60, 1);
-
-        this.registerChat();
-
-        this.socket.on('stop', (data) => {
-            this.players[data.id].x = data.x;
-            this.players[data.id].y = data.y;
-            this.players[data.id].anims.stop();
-        });
-
-        this.socket.on('remove', (id) => {
-            this.players[id].destroy();
-            delete this.players[id];
-        });
-
         this.s.cameras.main.fadeFrom(1000);
 
         this.s.cameras.main.on('camerafadeincomplete', () => {
-            this.transition = false;
+            this.s.keyLeft = this.s.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
+            this.s.keyRight = this.s.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+            this.s.keyUp = this.s.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
+            this.s.keyDown = this.s.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
+
+            this.socket.emit('newPlayer', this.room, this.position);
+
+            this.socket.on('newPlayer', (data) => {
+                this.addPlayer(data.id, data.x, data.y, data.direction);
+            });
+
+            this.socket.on('allPlayers', (data) => {
+                for (let i = 0; i < data.length; i++) {
+                    this.addPlayer(data[i].id, data[i].x, data[i].y, data[i].direction);
+                }
+
+                this.s.physics.world.setBounds(0, 0, this.s.map.widthInPixels, this.s.map.heightInPixels);
+                this.s.cameras.main.setBounds(0, 0, this.s.map.widthInPixels, this.s.map.heightInPixels);
+                this.s.cameras.main.startFollow(this.players[this.socket.id]);
+                this.s.registerCollision(this.socket.id);
+
+                this.transition = false;
+            });
+
+            this.socket.on('move', (data, direction) => {
+                this.players[data.id].x = data.x;
+                this.players[data.id].y = data.y;
+                this.players[data.id].anims.play(direction, true);
+            });
+
+            this.s.input.keyboard.on('keyup', (event) => {
+                if (event.keyCode >= 37 && event.keyCode <= 40) {
+                    this.stop();
+                }
+            });
+
+            this.hold(document.getElementById('up'), this.up.bind(this), 1000 / 60, 1);
+            this.hold(document.getElementById('down'), this.down.bind(this), 1000 / 60, 1);
+            this.hold(document.getElementById('left'), this.left.bind(this), 1000 / 60, 1);
+            this.hold(document.getElementById('right'), this.right.bind(this), 1000 / 60, 1);
+
+            this.registerChat();
+
+            this.socket.on('stop', (data) => {
+                this.players[data.id].x = data.x;
+                this.players[data.id].y = data.y;
+                this.players[data.id].anims.stop();
+            });
+
+            this.socket.on('remove', (id) => {
+                this.players[id].destroy();
+                delete this.players[id];
+            });
         });
 
         this.s.cameras.main.on('camerafadeoutcomplete', () => {
-            this.s.fadeOut();
+            this.s.changeScene();
         });
     }
 
@@ -179,7 +179,7 @@ class Player {
         chat.onsubmit = (e) => {
             e.preventDefault();
             let message = document.getElementById('message');
-            
+
             this.socket.emit('chat', message.value);
             message.value = '';
         };

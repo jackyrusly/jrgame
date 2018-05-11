@@ -7,9 +7,20 @@ class Town extends Scene {
         super({ key: 'Town' });
     }
 
-    init() {
+    init(data) {
         this.layers = {};
-        this.player = new Player(this, 'Town');
+
+        let position;
+
+        if (data === 'House_1' || Object.getOwnPropertyNames(data).length === 0) {
+            position = { x: 225, y: 280, direction: 'down' };
+        }
+        else if (data === 'House_2') {
+            position = { x: 655, y: 470, direction: 'down' };
+        }
+
+        this.player = new Player(this, 'Town', position);
+        this.selectedScene = null;
     }
 
     create() {
@@ -55,9 +66,17 @@ class Town extends Scene {
         this.player.update();
     }
 
-    fadeOut() {
+    changeScene() {
         this.player.socket.disconnect();
-        this.scene.start('House');
+        this.scene.start(this.selectedScene);
+    }
+
+    beforeChangeScene() {
+        let p = this.player;
+
+        p.transition = true;
+        p.players[p.socket.id].anims.stop();
+        this.cameras.main.fade(1000);
     }
 
     registerCollision(id) {
@@ -67,11 +86,13 @@ class Town extends Scene {
         this.physics.add.collider(p.players[id], this.layers[8]);
         this.physics.add.collider(p.players[id], this.layers[9]);
         this.physics.add.collider(p.players[id], this.layers[7], (sprite, tile) => {
-            if (tile.index === 167 && p.socket.id === id) {
-                p.transition = true;
-                p.socket.emit('stop', { x: p.players[p.socket.id].x, y: p.players[p.socket.id].y });
-                p.players[p.socket.id].anims.stop();
-                this.cameras.main.fade(1000);
+            if (tile.index === 167) {
+                this.selectedScene = 'House_1';
+                this.beforeChangeScene();
+            }
+            else if (tile.index === 1661 || tile.index === 1662) {
+                this.selectedScene = 'House_2';
+                this.beforeChangeScene();
             }
         });
     }

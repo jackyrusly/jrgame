@@ -5,18 +5,16 @@ class Player extends BaseModel {
         let player = new Player(socket.id);
 
         socket.on('chat', (message) => {
-            io.emit('chat', socket.id.substring(0, 5), message);
+            io.to(socket.room).emit('chat', socket.id.substring(0, 5), message);
         });
 
-        socket.on('newPlayer', (room) => {
+        socket.on('newPlayer', (room, position) => {
             socket.join(room);
             socket.room = room;
 
-            if (room == 'House') {
-                player.x = 240;
-                player.y = 365;
-                player.direction = 'up';
-            }
+            player.x = position.x;
+            player.y = position.y;
+            player.direction = position.direction;
 
             Player.list[room][socket.id] = player;
 
@@ -75,7 +73,8 @@ class Player extends BaseModel {
 
 Player.list = {
     'Town': {},
-    'House': {},
+    'House_1': {},
+    'House_2': {},
 };
 
 module.exports = Player;
