@@ -59,8 +59,8 @@ class Init extends Scene {
     }
 
     createProgressBar() {
-        var Rectangle = Phaser.Geom.Rectangle;
-        var main = Rectangle.Clone(this.cameras.main);
+        const Rectangle = Phaser.Geom.Rectangle;
+        const main = Rectangle.Clone(this.cameras.main);
 
         this.progressRect = new Rectangle(0, 0, main.width / 2, 50);
         Rectangle.CenterOn(this.progressRect, main.centerX, main.centerY);
@@ -76,7 +76,7 @@ class Init extends Scene {
     }
 
     onLoadProgress(progress) {
-        var color = (this.load.failed.size > 0) ? (0xff2200) : (0xffffff);
+        const color = 0xffffff;
 
         this.progressRect.width = progress * this.progressCompleteRect.width;
         this.progressBar
