@@ -143,24 +143,34 @@ class Player {
 
         btn.onmousedown = (e) => {
             e.preventDefault();
-            repeat();
+
+            if (this.transition === false)
+                repeat();
         };
 
         btn.onmouseup = (e) => {
             e.preventDefault();
-            clearTimeout(t);
-            this.stop();
+
+            if (this.transition === false) {
+                clearTimeout(t);
+                this.stop();
+            }
         };
 
         btn.ontouchstart = (e) => {
             e.preventDefault();
-            repeat();
+
+            if (this.transition === false)
+                repeat();
         };
 
         btn.ontouchend = (e) => {
             e.preventDefault();
-            clearTimeout(t);
-            this.stop();
+
+            if (this.transition === false) {
+                clearTimeout(t);
+                this.stop();
+            }
         };
     }
 }
