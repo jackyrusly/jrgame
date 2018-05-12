@@ -75,6 +75,7 @@ class Town extends Scene {
         let p = this.player;
 
         p.transition = true;
+        p.socket.emit('stop', { x: p.players[p.socket.id].x, y: p.players[p.socket.id].y });
         p.players[p.socket.id].anims.stop();
         this.cameras.main.fade(1000);
     }
