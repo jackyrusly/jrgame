@@ -5,7 +5,7 @@
 ## Built With
 - Node.js (Express.js)
 - Socket.io
-- Phaser
+- Phaser 3
 - Parcel
 
 ## Author
