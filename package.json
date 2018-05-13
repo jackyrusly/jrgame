@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "mkdir dist && cp -r client/assets dist/assets/ && node server/app"
+    "start": "mkdir dist && cp -r client/assets dist/assets/ && node ."
   },
   "author": "jrusly",
   "license": "MIT",
@@ -14,5 +14,9 @@
     "parcel-bundler": "^1.8.1",
     "phaser": "^3.6.0",
     "socket.io": "^2.1.0"
+  },
+  "devDependencies": {
+    "babel-preset-env": "^1.7.0",
+    "babel-register": "^6.26.0"
   }
 }

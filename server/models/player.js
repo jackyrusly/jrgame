@@ -1,14 +1,13 @@
-const BaseModel = require('../utils/base-model');
+import BaseModel from '../utilities/base-model';
+import { NEW_PLAYER, ALL_PLAYERS, CHAT, KEY_PRESS, MOVE, STOP, REMOVE } from '../../shared/constants/actions/player';
+import { TOWN, HOUSE_1, HOUSE_2 } from '../../shared/constants/scenes';
+import { DOWN } from '../../shared/constants/directions';
 
 class Player extends BaseModel {
     static onConnect(io, socket) {
         let player = new Player(socket.id);
 
-        socket.on('chat', (message) => {
-            io.to(socket.room).emit('chat', socket.id.substring(0, 5), message);
-        });
-
-        socket.on('newPlayer', (room, position) => {
+        socket.on(NEW_PLAYER, (room, position) => {
             socket.join(room);
             socket.room = room;
 
@@ -21,29 +20,26 @@ class Player extends BaseModel {
             let players = [];
 
             for (let i in Player.list[room]) {
-                let p = Player.list[room][i];
-
-                players.push({
-                    id: p.id,
-                    x: p.x,
-                    y: p.y,
-                    direction: p.direction,
-                });
+                players.push(Player.list[room][i]);
             }
 
-            socket.emit('allPlayers', players);
+            socket.emit(ALL_PLAYERS, players);
 
-            socket.broadcast.to(room).emit('newPlayer', player);
+            socket.broadcast.to(room).emit(NEW_PLAYER, player);
         });
 
-        socket.on('keyPress', (direction, coor) => {
+        socket.on(CHAT, (message) => {
+            io.to(socket.room).emit(CHAT, socket.id.substring(0, 5), message);
+        });
+
+        socket.on(KEY_PRESS, (direction, coor) => {
             player.update(direction, coor);
-            socket.broadcast.to(socket.room).emit('move', player, direction);
+            socket.broadcast.to(socket.room).emit('move', player);
         });
 
-        socket.on('stop', (coor) => {
+        socket.on(STOP, (coor) => {
             player.updatePosition(coor);
-            socket.broadcast.to(socket.room).emit('stop', player);
+            socket.broadcast.to(socket.room).emit(STOP, player);
         });
     }
 
@@ -51,13 +47,13 @@ class Player extends BaseModel {
         if (Player.list[socket.room])
             delete Player.list[socket.room][socket.id];
 
-        io.to(socket.room).emit('remove', socket.id);
+        io.to(socket.room).emit(REMOVE, socket.id);
     }
 
     constructor(id) {
         super(id, 225, 280);
 
-        this.direction = 'down';
+        this.direction = DOWN;
     }
 
     updatePosition(coor) {
@@ -71,10 +67,9 @@ class Player extends BaseModel {
     }
 }
 
-Player.list = {
-    'Town': {},
-    'House_1': {},
-    'House_2': {},
-};
+Player.list = {};
+Player.list[TOWN] = {};
+Player.list[HOUSE_1] = {};
+Player.list[HOUSE_2] = {};
 
-module.exports = Player;
+export default Player;

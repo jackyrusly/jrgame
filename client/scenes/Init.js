@@ -1,21 +1,25 @@
-import Phaser, { Scene } from 'phaser';
+import { Scene } from 'phaser';
+import { UP, LEFT, DOWN, RIGHT } from '../../shared/constants/directions';
+import { TOWN } from '../../shared/constants/scenes';
+import { INIT } from '../constants/scenes';
+import { MAP_TOWN, MAP_HOUSE_1, MAP_HOUSE_2, IMAGE_HOUSE, IMAGE_TOWN, IMAGE_PLAYER } from '../constants/assets';
 
 class Init extends Scene {
     constructor() {
-        super({ key: 'Init' });
+        super({ key: INIT });
         this.progressBar = null;
         this.progressCompleteRect = null;
         this.progressRect = null;
     }
 
     preload() {
-        this.load.tilemapTiledJSON('map-town', 'assets/maps/town.json');
-        this.load.tilemapTiledJSON('map-house-1', 'assets/maps/house-1.json');
-        this.load.tilemapTiledJSON('map-house-2', 'assets/maps/house-2.json');
+        this.load.tilemapTiledJSON(MAP_TOWN, 'assets/maps/town.json');
+        this.load.tilemapTiledJSON(MAP_HOUSE_1, 'assets/maps/house-1.json');
+        this.load.tilemapTiledJSON(MAP_HOUSE_2, 'assets/maps/house-2.json');
         
-        this.load.spritesheet('house', 'assets/maps/house.png', { frameWidth: 32, frameHeight: 32 });
-        this.load.spritesheet('town', 'assets/maps/town.png', { frameWidth: 32, frameHeight: 32 });
-        this.load.spritesheet('player', 'assets/sprites/player.png', { frameWidth: 32, frameHeight: 32 });
+        this.load.spritesheet(IMAGE_HOUSE, 'assets/maps/house.png', { frameWidth: 32, frameHeight: 32 });
+        this.load.spritesheet(IMAGE_TOWN, 'assets/maps/town.png', { frameWidth: 32, frameHeight: 32 });
+        this.load.spritesheet(IMAGE_PLAYER, 'assets/sprites/player.png', { frameWidth: 32, frameHeight: 32 });
 
         /* this.load.audio('music-town', ['assets/music/town.mp3']); */
 
@@ -31,29 +35,29 @@ class Init extends Scene {
         */
 
         this.anims.create({
-            key: 'left',
-            frames: this.anims.generateFrameNumbers('player', { start: 3, end: 5 }),
+            key: LEFT,
+            frames: this.anims.generateFrameNumbers(IMAGE_PLAYER, { start: 3, end: 5 }),
             frameRate: 13,
             repeat: -1
         });
 
         this.anims.create({
-            key: 'right',
-            frames: this.anims.generateFrameNumbers('player', { start: 6, end: 8 }),
+            key: RIGHT,
+            frames: this.anims.generateFrameNumbers(IMAGE_PLAYER, { start: 6, end: 8 }),
             frameRate: 13,
             repeat: -1
         });
 
         this.anims.create({
-            key: 'up',
-            frames: this.anims.generateFrameNumbers('player', { start: 9, end: 11 }),
+            key: UP,
+            frames: this.anims.generateFrameNumbers(IMAGE_PLAYER, { start: 9, end: 11 }),
             frameRate: 13,
             repeat: -1
         });
 
         this.anims.create({
-            key: 'down',
-            frames: this.anims.generateFrameNumbers('player', { start: 0, end: 2 }),
+            key: DOWN,
+            frames: this.anims.generateFrameNumbers(IMAGE_PLAYER, { start: 0, end: 2 }),
             frameRate: 13,
             repeat: -1
         });
@@ -72,7 +76,7 @@ class Init extends Scene {
     }
 
     onLoadComplete(loader) {
-        this.scene.start('Town');
+        this.scene.start(TOWN);
         this.scene.shutdown();
     }
 

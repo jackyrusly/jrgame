@@ -1,19 +1,24 @@
-import Phaser, { Scene } from 'phaser';
-import Player from '../sprites/player';
+import { Scene } from 'phaser';
+import Player from '../objects/player';
+import { STOP } from '../../shared/constants/actions/player';
+import { UP } from '../../shared/constants/directions';
+import { HOUSE_2, TOWN } from '../../shared/constants/scenes';
+import { MAP_HOUSE_2, IMAGE_HOUSE } from '../constants/assets';
+import { FADE_DURATION } from '../constants/config';
 
 class House_2 extends Scene {
     constructor() {
-        super({ key: 'House_2' });
+        super({ key: HOUSE_2 });
     }
 
     init() {
         this.layers = {};
-        this.player = new Player(this, 'House_2', { x: 240, y: 397, direction: 'up' });
+        this.player = new Player(this, HOUSE_2, { x: 240, y: 397, direction: UP });
     }
 
     create() {
-        this.map = this.add.tilemap('map-house-2');
-        this.tileset = this.map.addTilesetImage('house');
+        this.map = this.add.tilemap(MAP_HOUSE_2);
+        this.tileset = this.map.addTilesetImage(IMAGE_HOUSE);
 
         for (let i = 0; i < this.map.layers.length; i++) {
             this.layers[i] = this.map.createStaticLayer(this.map.layers[i].name, this.tileset, 0, 0);
@@ -31,7 +36,7 @@ class House_2 extends Scene {
 
     changeScene() {
         this.player.socket.disconnect();
-        this.scene.start('Town', 'House_2');
+        this.scene.start(TOWN, HOUSE_2);
     }
 
     registerCollision(id) {
@@ -41,9 +46,9 @@ class House_2 extends Scene {
         this.physics.add.collider(p.players[id], this.layers[1], (sprite, tile) => {
             if (tile.index === 20 && p.socket.id === id) {
                 p.transition = true;
-                p.socket.emit('stop', { x: p.players[p.socket.id].x, y: p.players[p.socket.id].y });
+                p.socket.emit(STOP, { x: p.players[p.socket.id].x, y: p.players[p.socket.id].y });
                 p.players[p.socket.id].anims.stop();
-                this.cameras.main.fade(1000);
+                this.cameras.main.fade(FADE_DURATION);
             }
         });
     }

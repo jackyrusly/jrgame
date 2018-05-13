@@ -1,10 +1,15 @@
-import Phaser, { Scene } from 'phaser';
+import { Scene } from 'phaser';
 import io from 'socket.io-client';
-import Player from '../sprites/player';
+import Player from '../objects/player';
+import { STOP } from '../../shared/constants/actions/player';
+import { DOWN } from '../../shared/constants/directions';
+import { HOUSE_1, HOUSE_2, TOWN } from '../../shared/constants/scenes';
+import { MAP_TOWN, IMAGE_TOWN } from '../constants/assets';
+import { FADE_DURATION } from '../constants/config';
 
 class Town extends Scene {
     constructor() {
-        super({ key: 'Town' });
+        super({ key: TOWN });
     }
 
     init(data) {
@@ -12,20 +17,20 @@ class Town extends Scene {
 
         let position;
 
-        if (data === 'House_1' || Object.getOwnPropertyNames(data).length === 0) {
-            position = { x: 225, y: 280, direction: 'down' };
+        if (data === HOUSE_1 || Object.getOwnPropertyNames(data).length === 0) {
+            position = { x: 225, y: 280, direction: DOWN };
         }
-        else if (data === 'House_2') {
-            position = { x: 655, y: 470, direction: 'down' };
+        else if (data === HOUSE_2) {
+            position = { x: 655, y: 470, direction: DOWN };
         }
 
-        this.player = new Player(this, 'Town', position);
+        this.player = new Player(this, TOWN, position);
         this.selectedScene = null;
     }
 
     create() {
-        this.map = this.add.tilemap('map-town');
-        this.tileset = this.map.addTilesetImage('town');
+        this.map = this.add.tilemap(MAP_TOWN);
+        this.tileset = this.map.addTilesetImage(IMAGE_TOWN);
 
         for (let i = 0; i < this.map.layers.length; i++) {
             this.layers[i] = this.map.createStaticLayer(this.map.layers[i].name, this.tileset, 0, 0);
@@ -75,9 +80,9 @@ class Town extends Scene {
         let p = this.player;
 
         p.transition = true;
-        p.socket.emit('stop', { x: p.players[p.socket.id].x, y: p.players[p.socket.id].y });
+        p.socket.emit(STOP, { x: p.players[p.socket.id].x, y: p.players[p.socket.id].y });
         p.players[p.socket.id].anims.stop();
-        this.cameras.main.fade(1000);
+        this.cameras.main.fade(FADE_DURATION);
     }
 
     registerCollision(id) {
@@ -88,11 +93,11 @@ class Town extends Scene {
         this.physics.add.collider(p.players[id], this.layers[9]);
         this.physics.add.collider(p.players[id], this.layers[7], (sprite, tile) => {
             if (tile.index === 167) {
-                this.selectedScene = 'House_1';
+                this.selectedScene = HOUSE_1;
                 this.beforeChangeScene();
             }
             else if (tile.index === 1661 || tile.index === 1662) {
-                this.selectedScene = 'House_2';
+                this.selectedScene = HOUSE_2;
                 this.beforeChangeScene();
             }
         });

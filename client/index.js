@@ -1,4 +1,5 @@
 import Phaser, { Game } from 'phaser';
+import { WIDTH, HEIGHT } from './constants/config';
 import Init from './scenes/Init';
 import Town from './scenes/Town';
 import House_1 from './scenes/House-1';
@@ -6,8 +7,8 @@ import House_2 from './scenes/House-2';
 
 const config = {
     type: Phaser.AUTO,
-    width: 350,
-    height: 350,
+    width: WIDTH,
+    height: HEIGHT,
     physics: {
         default: 'arcade',
         arcade: {

@@ -1,8 +1,13 @@
-const express = require('express');
-const Bundler = require('parcel-bundler');
-const path = require('path')
+import express from 'express';
+import Bundler from 'parcel-bundler';
+import path from 'path';
+import http from 'http';
+import socket from 'socket.io';
+import Player from './models/player';
+
 const app = express();
-const server = require('http').Server(app);
+const server = http.Server(app);
+const io = socket(server);
 const port = process.env.PORT || 4000;
 const bundler = new Bundler(path.resolve(__dirname, '../client/index.html'));
 
@@ -11,9 +16,6 @@ app.use(bundler.middleware());
 server.listen(port, () => {
     console.log(`App now listening on port ${port}`);
 });
-
-const io = require('socket.io')(server);
-const Player = require('./models/player');
 
 io.on('connection', function (socket) {
     Player.onConnect(io, socket);
