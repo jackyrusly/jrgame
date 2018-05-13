@@ -39,11 +39,12 @@ class Player {
             for (let i = 0; i < data.length; i++) {
                 this.addPlayer(data[i].id, data[i].x, data[i].y, data[i].direction);
             }
-
+    
             this.scene.physics.world.setBounds(0, 0, this.scene.map.widthInPixels, this.scene.map.heightInPixels);
             this.scene.cameras.main.setBounds(0, 0, this.scene.map.widthInPixels, this.scene.map.heightInPixels);
             this.scene.cameras.main.startFollow(this.players[this.socket.id]);
             this.scene.registerCollision(this.socket.id);
+            this.players[this.socket.id].setCollideWorldBounds(true);
 
             this.scene.cameras.main.on('camerafadeincomplete', () => {
                 this.transition = false;
@@ -101,8 +102,6 @@ class Player {
 
     addPlayer(id, x, y, direction) {
         this.players[id] = this.scene.physics.add.sprite(x, y, IMAGE_PLAYER);
-        this.players[id].setCollideWorldBounds(true);
-
         this.players[id].anims.play(direction);
         this.players[id].anims.stop();
     }

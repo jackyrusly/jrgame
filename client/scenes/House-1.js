@@ -1,10 +1,10 @@
 import { Scene } from 'phaser';
 import Player from '../objects/player';
-import { STOP } from '../../shared/constants/actions/player';
 import { UP } from '../../shared/constants/directions';
 import { HOUSE_1, TOWN } from '../../shared/constants/scenes';
 import { MAP_HOUSE_1, IMAGE_HOUSE } from '../constants/assets';
-import { FADE_DURATION } from '../constants/config';
+import TilesetAnimation from '../utilities/tileset-animation';
+import { onChangeScene } from '../utilities/scene-helper';
 
 class House_1 extends Scene {
     constructor() {
@@ -14,6 +14,7 @@ class House_1 extends Scene {
     init() {
         this.layers = {};
         this.player = new Player(this, HOUSE_1, { x: 240, y: 365, direction: UP });
+        this.tilesetAnimation = new TilesetAnimation();
     }
 
     create() {
@@ -21,11 +22,14 @@ class House_1 extends Scene {
         this.tileset = this.map.addTilesetImage(IMAGE_HOUSE);
 
         for (let i = 0; i < this.map.layers.length; i++) {
-            this.layers[i] = this.map.createStaticLayer(this.map.layers[i].name, this.tileset, 0, 0);
+            this.layers[i] = this.map.createDynamicLayer(this.map.layers[i].name, this.tileset, 0, 0);
         }
 
         this.layers[1].setCollisionBetween(0, 100);
         this.layers[2].setCollisionByExclusion([-1, 67, 68, 69]);
+
+        this.tilesetAnimation.register(this.layers[2], this.tileset.tileData);
+        this.tilesetAnimation.start();
 
         this.player.create();
     }
@@ -36,6 +40,7 @@ class House_1 extends Scene {
 
     changeScene() {
         this.player.socket.disconnect();
+        this.tilesetAnimation.destroy();
         this.scene.start(TOWN, HOUSE_1);
     }
 
@@ -45,10 +50,7 @@ class House_1 extends Scene {
         this.physics.add.collider(p.players[id], this.layers[2]);
         this.physics.add.collider(p.players[id], this.layers[1], (sprite, tile) => {
             if (tile.index === 20 && p.socket.id === id) {
-                p.transition = true;
-                p.socket.emit(STOP, { x: p.players[p.socket.id].x, y: p.players[p.socket.id].y });
-                p.players[p.socket.id].anims.stop();
-                this.cameras.main.fade(FADE_DURATION);
+                onChangeScene(p, this.cameras);
             }
         });
     }

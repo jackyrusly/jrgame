@@ -1,11 +1,10 @@
 import { Scene } from 'phaser';
 import io from 'socket.io-client';
 import Player from '../objects/player';
-import { STOP } from '../../shared/constants/actions/player';
 import { DOWN } from '../../shared/constants/directions';
 import { HOUSE_1, HOUSE_2, TOWN } from '../../shared/constants/scenes';
 import { MAP_TOWN, IMAGE_TOWN } from '../constants/assets';
-import { FADE_DURATION } from '../constants/config';
+import { onChangeScene } from '../utilities/scene-helper';
 
 class Town extends Scene {
     constructor() {
@@ -76,15 +75,6 @@ class Town extends Scene {
         this.scene.start(this.selectedScene);
     }
 
-    beforeChangeScene() {
-        let p = this.player;
-
-        p.transition = true;
-        p.socket.emit(STOP, { x: p.players[p.socket.id].x, y: p.players[p.socket.id].y });
-        p.players[p.socket.id].anims.stop();
-        this.cameras.main.fade(FADE_DURATION);
-    }
-
     registerCollision(id) {
         let p = this.player;
 
@@ -94,11 +84,11 @@ class Town extends Scene {
         this.physics.add.collider(p.players[id], this.layers[7], (sprite, tile) => {
             if (tile.index === 167) {
                 this.selectedScene = HOUSE_1;
-                this.beforeChangeScene();
+                onChangeScene(p, this.cameras);
             }
             else if (tile.index === 1661 || tile.index === 1662) {
                 this.selectedScene = HOUSE_2;
-                this.beforeChangeScene();
+                onChangeScene(p, this.cameras);
             }
         });
     }
