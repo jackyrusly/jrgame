@@ -48,40 +48,40 @@ class Player {
             this.scene.cameras.main.on('camerafadeincomplete', () => {
                 this.transition = false;
             });
-        });
 
-        this.socket.on(MOVE, (data) => {
-            this.players[data.id].x = data.x;
-            this.players[data.id].y = data.y;
-            this.players[data.id].anims.play(data.direction, true);
-        });
+            this.socket.on(MOVE, (data) => {
+                this.players[data.id].x = data.x;
+                this.players[data.id].y = data.y;
+                this.players[data.id].anims.play(data.direction, true);
+            });
 
-        this.scene.input.keyboard.on('keyup', (event) => {
-            if (event.keyCode >= 37 && event.keyCode <= 40) {
-                this.stop();
-            }
-        });
+            this.scene.input.keyboard.on('keyup', (event) => {
+                if (event.keyCode >= 37 && event.keyCode <= 40) {
+                    this.stop();
+                }
+            });
 
-        this.hold(document.getElementById('up'), this.up.bind(this));
-        this.hold(document.getElementById('down'), this.down.bind(this));
-        this.hold(document.getElementById('left'), this.left.bind(this));
-        this.hold(document.getElementById('right'), this.right.bind(this));
+            this.hold(document.getElementById('up'), this.up.bind(this));
+            this.hold(document.getElementById('down'), this.down.bind(this));
+            this.hold(document.getElementById('left'), this.left.bind(this));
+            this.hold(document.getElementById('right'), this.right.bind(this));
 
-        this.registerChat();
+            this.registerChat();
 
-        this.socket.on(STOP, (data) => {
-            this.players[data.id].x = data.x;
-            this.players[data.id].y = data.y;
-            this.players[data.id].anims.stop();
-        });
+            this.socket.on(STOP, (data) => {
+                this.players[data.id].x = data.x;
+                this.players[data.id].y = data.y;
+                this.players[data.id].anims.stop();
+            });
 
-        this.socket.on(REMOVE, (id) => {
-            this.players[id].destroy();
-            delete this.players[id];
-        });
+            this.socket.on(REMOVE, (id) => {
+                this.players[id].destroy();
+                delete this.players[id];
+            });
 
-        this.scene.cameras.main.on('camerafadeoutcomplete', () => {
-            this.scene.changeScene();
+            this.scene.cameras.main.on('camerafadeoutcomplete', () => {
+                this.scene.changeScene();
+            });
         });
     }
 
