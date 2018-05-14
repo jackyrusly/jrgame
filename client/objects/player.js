@@ -10,22 +10,11 @@ class Player {
         this.scene = scene;
         this.room = room;
         this.position = position;
-
         this.socket = io();
         this.players = {};
-        this.transition = true;
-        this.timeout = 1000 / 60;
-        this.scene.input.keyboard.removeAllListeners();
-
-        this.scene.scene.setVisible(false, room);
     }
 
     create() {
-        this.scene.keyLeft = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
-        this.scene.keyRight = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
-        this.scene.keyUp = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
-        this.scene.keyDown = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
-
         this.socket.emit(NEW_PLAYER, this.room, this.position);
 
         this.socket.on(NEW_PLAYER, (data) => {
@@ -43,27 +32,7 @@ class Player {
             this.scene.physics.world.setBounds(0, 0, this.scene.map.widthInPixels, this.scene.map.heightInPixels);
             this.scene.cameras.main.setBounds(0, 0, this.scene.map.widthInPixels, this.scene.map.heightInPixels);
             this.scene.cameras.main.startFollow(this.players[this.socket.id]);
-            this.scene.registerCollision(this.socket.id);
             this.players[this.socket.id].setCollideWorldBounds(true);
-
-            this.scene.cameras.main.on('camerafadeincomplete', () => {
-                this.transition = false;
-
-                this.scene.input.keyboard.on('keyup', (event) => {
-                    if (event.keyCode >= 37 && event.keyCode <= 40) {
-                        this.stop();
-                    }
-                });
-
-                this.hold(document.getElementById('up'), this.up.bind(this));
-                this.hold(document.getElementById('down'), this.down.bind(this));
-                this.hold(document.getElementById('left'), this.left.bind(this));
-                this.hold(document.getElementById('right'), this.right.bind(this));
-
-                this.scene.cameras.main.on('camerafadeoutcomplete', () => {
-                    this.scene.changeScene();
-                });
-            });
 
             this.socket.on(MOVE, (data) => {
                 this.players[data.id].x = data.x;
@@ -84,20 +53,6 @@ class Player {
 
             this.registerChat();
         });
-    }
-
-    update() {
-        if (this.transition === false) {
-            if (this.scene.keyLeft.isDown) {
-                this.left();
-            } else if (this.scene.keyRight.isDown) {
-                this.right();
-            } else if (this.scene.keyUp.isDown) {
-                this.up();
-            } else if (this.scene.keyDown.isDown) {
-                this.down();
-            }
-        }
     }
 
     addPlayer(id, x, y, direction) {
@@ -134,49 +89,7 @@ class Player {
         this.players[this.socket.id].body.velocity.x = 0;
         this.players[this.socket.id].body.velocity.y = 0;
         this.players[this.socket.id].anims.stop();
-
         this.socket.emit(STOP, { x: this.players[this.socket.id].x, y: this.players[this.socket.id].y });
-    }
-
-    hold(btn, action) {
-        let t;
-
-        let repeat = () => {
-            action();
-            t = setTimeout(repeat, this.timeout);
-        }
-
-        btn.onmousedown = (e) => {
-            e.preventDefault();
-
-            if (this.transition === false)
-                repeat();
-        };
-
-        btn.onmouseup = (e) => {
-            e.preventDefault();
-            clearTimeout(t);
-
-            if (this.transition === false) {
-                this.stop();
-            }
-        };
-
-        btn.ontouchstart = (e) => {
-            e.preventDefault();
-
-            if (this.transition === false)
-                repeat();
-        };
-
-        btn.ontouchend = (e) => {
-            e.preventDefault();
-            clearTimeout(t);
-
-            if (this.transition === false) {
-                this.stop();
-            }
-        };
     }
 
     registerChat() {
