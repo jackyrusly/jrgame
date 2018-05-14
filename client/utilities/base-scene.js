@@ -94,10 +94,10 @@ class BaseScene extends Scene {
     }
 
     registerController() {
-        this.hold(document.getElementById('up'), this.player.up.bind(this));
-        this.hold(document.getElementById('down'), this.player.down.bind(this));
-        this.hold(document.getElementById('left'), this.player.left.bind(this));
-        this.hold(document.getElementById('right'), this.player.right.bind(this));
+        this.hold(document.getElementById('up'), this.player.up.bind(this.player));
+        this.hold(document.getElementById('down'), this.player.down.bind(this.player));
+        this.hold(document.getElementById('left'), this.player.left.bind(this.player));
+        this.hold(document.getElementById('right'), this.player.right.bind(this.player));
     }
 
     hold(btn, action) {
