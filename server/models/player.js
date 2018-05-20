@@ -1,20 +1,16 @@
 import BaseModel from '../utilities/base-model';
 import { NEW_PLAYER, ALL_PLAYERS, CHAT, KEY_PRESS, MOVE, STOP, REMOVE } from '../../shared/constants/actions/player';
 import { TOWN, HOUSE_1, HOUSE_2 } from '../../shared/constants/scenes';
-import { DOWN } from '../../shared/constants/directions';
 
 class Player extends BaseModel {
     static onConnect(io, socket) {
-        let player = new Player(socket.id);
+        let player;
 
         socket.on(NEW_PLAYER, (room, position) => {
             socket.join(room);
             socket.room = room;
 
-            player.x = position.x;
-            player.y = position.y;
-            player.direction = position.direction;
-
+            player = new Player(socket.id, position);
             Player.list[room][socket.id] = player;
 
             let players = [];
@@ -34,7 +30,7 @@ class Player extends BaseModel {
 
         socket.on(KEY_PRESS, (direction, coor) => {
             player.update(direction, coor);
-            socket.broadcast.to(socket.room).emit('move', player);
+            socket.broadcast.to(socket.room).emit(MOVE, player);
         });
 
         socket.on(STOP, (coor) => {
@@ -50,10 +46,9 @@ class Player extends BaseModel {
         io.to(socket.room).emit(REMOVE, socket.id);
     }
 
-    constructor(id) {
-        super(id, 225, 280);
-
-        this.direction = DOWN;
+    constructor(id, position) {
+        super(id, position.x, position.y);
+        this.direction = position.direction;
     }
 
     updatePosition(coor) {
