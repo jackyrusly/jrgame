@@ -9,9 +9,14 @@ const app = express();
 const server = http.Server(app);
 const io = socket(server);
 const port = process.env.PORT || 4000;
-const bundler = new Bundler(path.resolve(__dirname, '../client/index.html'));
 
-app.use(bundler.middleware());
+if (port === 4000) {
+  const bundler = new Bundler(path.resolve(__dirname, '../client/index.html'));
+
+  app.use(bundler.middleware());
+} else {
+  app.use(express.static(path.resolve(__dirname, '../dist')));
+}
 
 server.listen(port, () => {
     console.log(`App now listening on port ${port}`);

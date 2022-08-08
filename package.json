@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "mkdir dist && cp -r client/assets dist/assets/ && node --max_old_space_size=2560 ."
+    "start": "cp -r client/assets dist/assets/ && node .",
+    "build": "parcel build ./client/index.html"
   },
   "author": "jrusly",
   "license": "MIT",
