@@ -3,6 +3,7 @@ import { UP, LEFT, DOWN, RIGHT } from '../../shared/constants/directions';
 import { TOWN } from '../../shared/constants/scenes';
 import { INIT } from '../constants/scenes';
 import { MAP_TOWN, MAP_HOUSE_1, MAP_HOUSE_2, IMAGE_HOUSE, IMAGE_TOWN, IMAGE_PLAYER } from '../constants/assets';
+import { analytics } from '../utilities/analytics';
 
 class Init extends Scene {
     constructor() {
@@ -91,6 +92,7 @@ class Init extends Scene {
     }
 
     onLoadComplete(loader) {
+        analytics();
         this.scene.start(TOWN);
         this.scene.shutdown();
     }
