@@ -1,11 +1,28 @@
 export function analytics() {
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-ZZGL9C0M2J');
-
-  const head = document.getElementsByTagName('head')[0];
-  const scriptAnalytics = document.createElement('script');
-  scriptAnalytics.src = 'https://www.googletagmanager.com/gtag/js?id=G-ZZGL9C0M2J';
-  head.append(scriptAnalytics);
+  let uuid = localStorage.getItem('uuid');
+  
+  if (!uuid) {
+    uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      const r = (dt + Math.random()*16)%16 | 0;
+      dt = Math.floor(dt/16);
+      return (c=='x' ? r :(r&0x3|0x8)).toString(16);
+    });
+    
+    localStorage.setItem('uuid', uuid);
+  }
+  
+  fetch(`https://www.google-analytics.com/mp/collect?measurement_id=G-ZZGL9C0M2J&api_secret=tq8kk9XoRFWR0hyNXvMNbQ`, {
+    method: 'POST',
+    body: JSON.stringify({
+      client_id: uuid,
+      events: [{
+        name: 'page_view',
+        params: {
+          page_title: 'Home',
+          page_location: '/',
+          engagement_time_msec: '1',
+        },
+      }],
+    }),
+  });
 }
