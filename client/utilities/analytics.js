@@ -2,7 +2,7 @@ export function analytics() {
   let uuid = localStorage.getItem('uuid');
   
   if (!uuid) {
-    const dt = new Date().getTime();
+    let dt = new Date().getTime();
     uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
       const r = (dt + Math.random()*16)%16 | 0;
       dt = Math.floor(dt/16);
