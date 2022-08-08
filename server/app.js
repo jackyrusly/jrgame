@@ -9,7 +9,7 @@ import Player from './models/player';
 const app = express();
 const server = http.Server(app);
 const io = socket(server);
-const port = process.env.PORT || 4001;
+const port = process.env.PORT || 4000;
 
 if (port === 4000) {
   const bundler = new Bundler(path.resolve(__dirname, '../client/index.html'));
