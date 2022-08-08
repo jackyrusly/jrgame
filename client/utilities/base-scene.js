@@ -53,6 +53,7 @@ class BaseScene extends Scene {
 
         this.player.create();
 
+        this.cameras.main.setBackgroundColor('#222');
         this.cameras.main.on('camerafadeincomplete', () => {
             this.transition = false;
 
