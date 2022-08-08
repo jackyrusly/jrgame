@@ -3,6 +3,7 @@ import Bundler from 'parcel-bundler';
 import path from 'path';
 import http from 'http';
 import socket from 'socket.io';
+import compression  from 'compression';
 import Player from './models/player';
 
 const app = express();
@@ -17,6 +18,8 @@ if (port === 4000) {
 } else {
   app.use(express.static(path.resolve(__dirname, '../dist')));
 }
+
+app.use(compression());
 
 server.listen(port, () => {
     console.log(`App now listening on port ${port}`);
