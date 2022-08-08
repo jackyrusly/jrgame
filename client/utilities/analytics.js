@@ -19,7 +19,7 @@ export function analytics() {
       events: [{
         name: 'page_view',
         params: {
-          page_title: 'Home',
+          page_title: 'JRGame',
           page_location: '/',
           engagement_time_msec: '1',
         },
