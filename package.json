@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "mkdir dist && cp -r client/assets dist/assets/ && node ."
+    "start": "cp -r client/assets dist/assets/ && node ."
   },
   "author": "jrusly",
   "license": "MIT",
@@ -13,6 +13,7 @@
     "glslify": "^6.1.1",
     "parcel-bundler": "^1.8.1",
     "phaser": "^3.6.0",
+    "phaser3-rex-plugins": "^1.1.72",
     "socket.io": "^2.1.0"
   },
   "devDependencies": {

@@ -1,4 +1,5 @@
 import Phaser, { Game } from 'phaser';
+import VirtualJoystickPlugin from 'phaser3-rex-plugins/plugins/virtualjoystick-plugin';
 import { WIDTH, HEIGHT } from './constants/config';
 import Init from './scenes/Init';
 import Town from './scenes/Town';
@@ -15,6 +16,13 @@ const config = {
             gravity: { y: 0 },
             debug: false,
         },
+    },
+    plugins: {
+      global: [{
+        key: 'virtualJoystick',
+        plugin: VirtualJoystickPlugin,
+        start: true,
+      }],
     },
     scene: [Init, Town, House_1, House_2],
 };

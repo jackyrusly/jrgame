@@ -1,7 +1,6 @@
 import { Scene } from 'phaser';
 import Player from '../objects/player';
 import { FADE_DURATION } from '../constants/config';
-import { STOP } from '../../shared/constants/actions/player';
 import TilesetAnimation from './tileset-animation';
 
 class BaseScene extends Scene {
@@ -20,12 +19,27 @@ class BaseScene extends Scene {
         this.input.keyboard.removeAllListeners();
     }
 
-    create(tilemap, tileset, withTSAnimation) {
-        this.keyLeft = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
-        this.keyRight = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
-        this.keyUp = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
-        this.keyDown = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
+    initKeyboard() {
+        const cursorKeys = this.input.keyboard.createCursorKeys();
 
+        this.keyboard = {
+            cursorKeys,
+            isUp: () => {
+                return this.joystick.up || cursorKeys.up.isDown;
+            },
+            isLeft: () => {
+                return this.joystick.left || cursorKeys.left.isDown;
+            },
+            isDown: () => {
+                return this.joystick.down || cursorKeys.down.isDown;
+            },
+            isRight: () => {
+                return this.joystick.right || cursorKeys.right.isDown;
+            },
+        };
+    }
+
+    create(tilemap, tileset, withTSAnimation) {
         this.withTSAnimation = withTSAnimation;
         this.map = this.add.tilemap(tilemap);
         this.tileset = this.map.addTilesetImage(tileset);
@@ -47,25 +61,50 @@ class BaseScene extends Scene {
                     this.player.stop();
                 }
             });
-            
+
             this.registerCollision();
-            this.registerController();
         });
 
+        this.createJoystick();
+        this.initKeyboard();
         this.cameras.main.on('camerafadeoutcomplete', this.changeScene.bind(this));
+    }
+
+    createJoystick() {
+        this.joystick = this.plugins.get('virtualJoystick').add(this, {
+            x: 0,
+            y: 0,
+            radius: 50,
+            base: this.add.circle(0, 0, 50, 0x888888, 0.6).setDepth(1),
+            thumb: this.add.circle(0, 0, 25, 0xcccccc, 0.8).setDepth(1),
+            dir: '4dir',
+        });
+
+        this.joystick.setVisible(false);
+
+        this.input.on('pointerup', () => {
+            if (!this.isInteracting) {
+                this.joystick.setVisible(false);
+            }
+        });
+
+        this.input.on('pointerdown', (pointer) => {
+            if (!this.isInteracting) {
+                this.joystick.setPosition(pointer.x, pointer.y);
+                this.joystick.update();
+                this.joystick.setVisible(true);
+            }
+        });
     }
 
     update() {
         if (this.transition === false) {
-            if (this.keyLeft.isDown) {
-                this.player.left();
-            } else if (this.keyRight.isDown) {
-                this.player.right();
-            } else if (this.keyUp.isDown) {
-                this.player.up();
-            } else if (this.keyDown.isDown) {
-                this.player.down();
-            }
+            this.player.update({
+                isUp: this.keyboard.isUp(),
+                isDown: this.keyboard.isDown(),
+                isLeft: this.keyboard.isLeft(),
+                isRight: this.keyboard.isRight(),
+            });
         }
     }
 
@@ -91,13 +130,6 @@ class BaseScene extends Scene {
         this.tilesetAnimation = new TilesetAnimation();
         this.tilesetAnimation.register(layer, this.tileset.tileData);
         this.tilesetAnimation.start();
-    }
-
-    registerController() {
-        this.hold(document.getElementById('up'), this.player.up.bind(this.player));
-        this.hold(document.getElementById('down'), this.player.down.bind(this.player));
-        this.hold(document.getElementById('left'), this.player.left.bind(this.player));
-        this.hold(document.getElementById('right'), this.player.right.bind(this.player));
     }
 
     hold(btn, action) {

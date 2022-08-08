@@ -2,6 +2,10 @@
     margin: 0;
 }
 
+body {
+  background-color: #222;
+}
+
 canvas {
     padding: 0;
     margin: auto;
@@ -30,10 +34,10 @@ canvas {
     position: absolute;
     top: 300px;
     bottom: 0;
-    left: 100px;
+    left: 0;
     right: 0;
     margin: auto;
-    width: 243px;
+    max-width: 350px;
     height: 100px;
 }
 
@@ -42,11 +46,19 @@ canvas {
     border: 1px solid black;
     margin-top: 5px;
     overflow-y: scroll;
+    border-radius: 8px;
+    background-color: white;
+    padding: 12px;
 }
 
 input[type=text] {
     margin-top: 5px;
-    width: 239px;
+    max-width: 330px;
+    border: none;
+    width: 100%;
+    border-radius: 8px;
+    padding: 8px;
+    outline: none;
 }
 
 #control button {
