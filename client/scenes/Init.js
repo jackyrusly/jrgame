@@ -62,16 +62,12 @@ class Init extends Scene {
             repeat: -1
         });
         
-        document.querySelector('canvas').addEventListener('click', function () {
-           const input = document.querySelector('input');
-           input.setAttribute('readonly', 'readonly');
-           input.setAttribute('disabled', 'true');
+        document.querySelector('canvas').addEventListener('pointerdown', function () {
+            const activeElement = document.activeElement;
 
-            setTimeout(function() {
-                input.blur();
-                input.removeAttribute('readonly');
-                input.removeAttribute('disabled');
-            }, 100);
+            if (document.activeElement !== document.body) {
+                activeElement.blur();
+            }
         });
     }
 
