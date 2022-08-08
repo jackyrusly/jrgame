@@ -2,7 +2,6 @@
   "name": "game",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
   "scripts": {
     "start": "mkdir dist && cp -r client/assets dist/assets/ && node ."
   },
