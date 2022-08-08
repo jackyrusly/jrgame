@@ -66,7 +66,14 @@ class Init extends Scene {
             const activeElement = document.activeElement;
 
             if (document.activeElement !== document.body) {
-                activeElement.blur();
+                activeElement.setAttribute('readonly', 'readonly');
+                activeElement.setAttribute('disabled', 'true');
+
+                setTimeout(function() {
+                    activeElement.blur();
+                    activeElement.removeAttribute('readonly');
+                    activeElement.removeAttribute('disabled');
+                }, 100);
             }
         });
     }
