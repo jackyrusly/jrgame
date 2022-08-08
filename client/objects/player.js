@@ -130,6 +130,19 @@ class Player {
 
             this.socket.emit(CHAT, message.value);
             message.value = '';
+            
+            const activeElement = document.activeElement;
+
+            if (activeElement !== document.body) {
+                activeElement.setAttribute('readonly', 'readonly');
+                activeElement.setAttribute('disabled', 'true');
+
+                setTimeout(function() {
+                    activeElement.blur();
+                    activeElement.removeAttribute('readonly');
+                    activeElement.removeAttribute('disabled');
+                }, 100);
+            }
         };
 
         this.socket.on(CHAT, (name, message) => {
