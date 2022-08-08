@@ -61,6 +61,10 @@ class Init extends Scene {
             frameRate: 13,
             repeat: -1
         });
+        
+        document.querySelector('canvas').addEventListener('click', function () {
+           document.querySelector('input').blur();
+        });
     }
 
     createProgressBar() {
