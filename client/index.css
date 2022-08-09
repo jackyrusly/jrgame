@@ -70,6 +70,8 @@ input[type=text] {
   color: white;
   text-align: center;
   margin-top: 0.5rem;
+  display: block;
+  text-decoration: none;
 }
 
 .code:hover, .code:active {
