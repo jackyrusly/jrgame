@@ -65,3 +65,13 @@ input[type=text] {
     margin: 5px;
     padding: 5px;
 }
+
+.code {
+  color: white;
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+.code:hover, .code:active {
+  color: white;
+}
