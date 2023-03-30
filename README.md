@@ -1,6 +1,6 @@
 # JRGame
 
-<a href="https://jrgame.herokuapp.com/">Demo</a>
+<a href="https://game.jackyrusly.com">Demo</a>
 
 ## Built With
 - Node.js (Express.js)
