@@ -154,13 +154,15 @@ class Player {
   }
 
   stop() {
-    this.players[this.socket.id].body.velocity.x = 0;
-    this.players[this.socket.id].body.velocity.y = 0;
-    this.players[this.socket.id].anims.stop();
-    this.socket.emit(STOP, {
-      x: this.players[this.socket.id].x,
-      y: this.players[this.socket.id].y,
-    });
+    if (this.players[this.socket.id].anims.isPlaying) {
+      this.players[this.socket.id].body.velocity.x = 0;
+      this.players[this.socket.id].body.velocity.y = 0;
+      this.players[this.socket.id].anims.stop();
+      this.socket.emit(STOP, {
+        x: this.players[this.socket.id].x,
+        y: this.players[this.socket.id].y,
+      });
+    }
   }
 
   update(direction: {
