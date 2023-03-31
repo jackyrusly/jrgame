@@ -1,6 +1,6 @@
 {
   "name": "@jrgame/client",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "license": "MIT",
   "scripts": {
     "copy:assets": "mkdir -p dist && cp -r src/assets dist/",
