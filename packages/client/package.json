@@ -1,0 +1,28 @@
+{
+  "name": "@jrgame/client",
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "copy:assets": "mkdir -p dist && cp -r src/assets dist/",
+    "dev": "concurrently \"yarn copy:assets\" \"parcel watch src/index.html\"",
+    "build": "concurrently \"yarn copy:assets\" \"parcel build src/index.html\""
+  },
+  "dependencies": {
+    "@jrgame/shared": "*",
+    "phaser": "^3.55.2",
+    "phaser3-rex-plugins": "^1.1.83",
+    "socket.io-client": "^4.6.1"
+  },
+  "devDependencies": {
+    "parcel": "^2.8.3"
+  },
+  "alias": {
+    "@constants/*": "./src/constants/$1",
+    "@objects/*": "./src/objects/$1",
+    "@scenes/*": "./src/scenes/$1",
+    "@utilities/*": "./src/utilities/$1"
+  },
+  "staticFiles": {
+    "staticPath": "public"
+  }
+}

@@ -1,24 +1,35 @@
 {
-  "name": "game",
-  "version": "1.0.0",
-  "description": "",
-  "scripts": {
-    "start": "cp -r client/assets dist/assets/ && node .",
-    "build": "parcel build ./client/index.html"
-  },
-  "author": "jrusly",
+  "name": "jrgame",
+  "version": "0.1.0",
+  "description": "Multiplayer online RPG using Phaser 3 and Socket.io",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "author": "jackyrusly",
   "license": "MIT",
-  "dependencies": {
-    "compression": "^1.7.4",
-    "express": "^4.16.3",
-    "glslify": "^6.1.1",
-    "parcel-bundler": "^1.8.1",
-    "phaser": "^3.6.0",
-    "phaser3-rex-plugins": "^1.1.72",
-    "socket.io": "^2.1.0"
+  "scripts": {
+    "clean": "rm -rf node_modules packages/**/node_modules packages/**/dist",
+    "build": "yarn build:shared && concurrently \"yarn build:client\" \"yarn build:server\"",
+    "build:client": "nx build @jrgame/client",
+    "build:server": "nx build @jrgame/server",
+    "build:shared": "nx build @jrgame/shared",
+    "dev": "concurrently \"yarn:dev:*\"",
+    "dev:client": "nx dev @jrgame/client",
+    "dev:server": "nx dev @jrgame/server",
+    "start": "nx start @jrgame/server"
   },
   "devDependencies": {
-    "babel-preset-env": "^1.7.0",
-    "babel-register": "^6.26.0"
+    "@types/node": "^18.15.11",
+    "@typescript-eslint/eslint-plugin": "^5.57.0",
+    "@typescript-eslint/parser": "^5.57.0",
+    "concurrently": "^8.0.1",
+    "eslint": "^8.37.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-prettier": "^4.2.1",
+    "nx": "^15.9.1",
+    "prettier": "^2.8.7",
+    "typescript": "^5.0.3"
   }
 }

@@ -7,6 +7,15 @@
 - Socket.io
 - Phaser 3
 - Parcel
+- TypeScript
+
+## How to Run
+
+```
+yarn
+yarn build:shared
+yarn dev
+```
 
 ## Author
 [Jacky Rusly](https://www.jackyrusly.com)
