@@ -21,8 +21,5 @@
     "@objects/*": "./src/objects/$1",
     "@scenes/*": "./src/scenes/$1",
     "@utilities/*": "./src/utilities/$1"
-  },
-  "staticFiles": {
-    "staticPath": "public"
   }
 }
